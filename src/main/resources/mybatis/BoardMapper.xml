@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jang.dressfi.mapper.BoardMapper">
+	<select id="getBoardList" parameterType="SearchVO"
+		resultType="BoardVO">
+		SELECT bno, title, writerId, replycnt, viewcnt, to_char(regDate,
+		'YYYY-MM-DD HH24:MI')regDate, recommendcnt
+		FROM ( SELECT ROWNUM AS
+		rnum, a.*
+		FROM ( SELECT * FROM bbs_board WHERE del_yn='n'
+		<if test="keyword != null">
+			<choose>
+				<when test="type == 'title'"> AND title like '%'||#{keyword}||'%' </when>
+				<when test="type == 'writerId'">AND writerId like '%'||#{keyword}||'%' </when>
+				<when test="type == 'content'"> AND content like '%'||#{keyword}||'%' </when>
+			</choose>
+		</if>
+		order by bno desc ) a
+		)
+		WHERE rnum between #{startRow} and #{endRow}
+	</select>
+	<select id="getADBoardList" parameterType="BoardVO"	resultType="BoardVO">
+		select * from bbs_board order by bno
+	</select>
+
+	<select id="getTotalRow" parameterType="SearchVO"
+		resultType="int">
+		SELECT count(*) AS totalrow
+		FROM bbs_board
+		WHERE del_yn='n'
+		<if test="keyword != null">
+			<choose>
+				<when test="type == 'title'">AND title like '%'||#{keyword}||'%' </when>
+				<when test="type == 'writerId'">AND writerId like '%'||#{keyword}||'%' </when>
+				<when test="type == 'content'">AND content like '%'||#{keyword}||'%' </when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="getArticle" resultType="BoardVO">
+		SELECT bno, title, content,
+		writerId, to_char(regDate, 'YYYY-MM-DD HH24:MI')regDate, viewcnt,
+		replycnt, recommendcnt
+		FROM bbs_board
+		WHERE bno=#{bno}
+	</select>
+
+	<insert id="writeArticle" keyProperty="bno">
+		<selectKey keyProperty="bno" resultType="int" order="BEFORE">
+			SELECT
+			COALESCE(MAX(bno), 0) + 1 AS bno FROM bbs_board
+		</selectKey>
+
+		INSERT INTO bbs_board(bno, title, content, writerId) VALUES(#{bno},
+		#{title}, #{content}, #{writerId})
+	</insert>
+	<update id="updateArticle">
+		UPDATE bbs_board
+		SET title = #{title}, content =
+		#{content}, writerId = #{writerId},
+		viewcnt = #{viewcnt}
+		WHERE bno =
+		#{bno}
+	</update>
+	<delete id="deleteArticle">
+		DELETE FROM bbs_board
+		WHERE bno = #{bno}
+	</delete>
+	<update id="incrementViewCnt">
+		UPDATE bbs_board
+		SET viewcnt = viewcnt+1
+		WHERE bno =
+		#{bno}
+	</update>
+	<update id="incrementGoodCnt">
+		UPDATE bbs_board
+		SET recommendcnt=recommendcnt+1
+		WHERE
+		bno = #{bno}
+	</update>
+	<update id="incrementReplyCnt">
+		UPDATE bbs_board
+		SET replycnt = replycnt + 1
+		WHERE
+		bno=#{bno}
+	</update>
+	<select id="getReplyList" resultType="ReplyVO">
+		select rno, bno, content,
+		recommendcnt, multicnt, to_char(regDate, 'yyyy-mm-dd hh24:mi')
+		regDate, writerId
+		from bbs_reply
+		WHERE bno = #{bno} and del_yn='n'
+	</select>
+	<select id="getReply" resultType="ReplyVO">
+		select rno, bno, content,
+		writerId, regDate from bbs_reply
+		WHERE rno = #{rno}
+	</select>
+	<insert id="writeReply" keyProperty="rno">
+		<selectKey keyProperty="rno" resultType="int" order="BEFORE">
+			select
+			coalesce(max(rno), 0) + 1 as rno
+			from bbs_reply
+		</selectKey>
+
+		insert into bbs_reply (rno, bno, content, writerId)
+		values(#{rno},
+		#{bno}, #{content}, #{writerId})
+	</insert>
+	<update id="updateReply">
+		update bbs_reply
+		set content = #{content}, writerId =
+		#{writerId}, regDate = #{regDate}
+		WHERE rno = #{rno}
+	</update>
+
+	<delete id="deleteReply">
+		DELETE FROM bbs_reply
+		WHERE rno = #{rno}
+	</delete>
+
+	<delete id="deleteReplyBybno">
+		DELETE FROM bbs_reply
+		WHERE bno = #{bno}
+	</delete>
+
+	<update id="incReplyGoodCnt">
+		UPDATE bbs_reply
+		SET recommendcnt = recommendcnt + 1
+		WHERE rno = #{rno}
+	</update>
+
+	<select id="getFileList" resultType="AttFileVO">
+		SELECT fno, bno, ofilename,
+		sfilename, filesize
+		FROM bbs_file
+		WHERE bno = #{bno}
+	</select>
+	<select id="getFileName" resultType="String" parameterType="int">
+		SELECT ofilename
+		FROM bbs_file
+		WHERE fno = #{fno}
+	</select>
+	<insert id="insertFile" keyProperty="fno">
+		<selectKey keyProperty="fno" resultType="int" order="BEFORE">
+			select
+			coalesce(max(fno), 0) + 1 as fno
+			from bbs_file
+		</selectKey>
+		insert into bbs_file (fno, bno, ofilename, sfilename, filesize)
+		values
+		(#{fno}, #{bno}, #{ofilename}, #{sfilename}, #{filesize})
+	</insert>
+
+	<delete id="deleteFile">
+		delete from bbs_file
+		WHERE fno = #{fno}
+	</delete>
+	<delete id="deleteFileBybno">
+		delete from bbs_file
+		WHERE bno = #{bno}
+	</delete>
+
+	<insert id="addBoardLike" keyProperty="blno">
+		<selectKey keyProperty="blno" resultType="int"
+			order="BEFORE">
+			select coalesce(max(blno), 0) + 1 as blno
+			from bbs_boardlike
+		</selectKey>
+		insert into bbs_boardlike (blno, bno, userId)
+		values(#{blno}, #{bno},
+		#{userId})
+	</insert>
+
+	<select id="getBoardLike" resultType="int">
+		select coalesce(max(bno),
+		0) as bno
+		from bbs_boardlike
+		WHERE userId = #{userId} and bno = #{bno}
+	</select>
+
+	<insert id="addReplyLike" keyProperty="rlno">
+		<selectKey keyProperty="rlno" resultType="int"
+			order="BEFORE">
+			select coalesce(max(rlno), 0) + 1 as rlno
+			from bbs_replylike
+		</selectKey>
+		insert into bbs_replylike (rlno, rno, userId)
+		values(#{rlno}, #{rno},
+		#{userId})
+	</insert>
+
+	<select id="getReplyLike" resultType="int">
+		select coalesce(max(rno),
+		0) as rno
+		from bbs_replylike
+		WHERE userId = #{userId} and rno = #{rno}
+	</select>
+
+	<insert id="addBoardView" keyProperty="bvno">
+		<selectKey keyProperty="bvno" resultType="int"
+			order="BEFORE">
+			select coalesce(max(bvno), 0) + 1 as bvno
+			from bbs_boardview
+		</selectKey>
+		insert into bbs_boardview (bvno, bno, userId, mem_yn)
+		values(#{bvno},
+		#{bno}, #{userId}, #{mem_yn})
+	</insert>
+	<select id="getBoardView" resultType="int">
+		select coalesce(max(bno),
+		0) as bno
+		from bbs_boardview
+		WHERE userId = #{userId} and bno = #{bno}
+	</select>
+
+	<resultMap id="getMap" type="HashMap"> 
+		<result property="HNO" column="HNO" /> 
+		<result property="H_MDIV" column="H_MDIV" /> 
+		<result property="H_MNUM" column="H_MNUM" /> 
+		<result property="H_TITLE" column="H_TITLE" /> 
+		<result property="H_TEXT" column="H_TEXT" /> 
+		<result property="H_FILELOC" column="H_FILELOC" jdbcType="CLOB" javaType="java.lang.String" /> 
+		<result property="H_VIEWCNT" column="H_VIEWCNT" /> 
+		<result property="H_LIKECNT" column="H_LIKECNT" /> 
+		<result property="H_REPLYCNT" column="H_REPLYCNT" /> 
+		<result property="H_REGDATE" column="H_REGDATE" /> 
+		<result property="MD_NAME" column="MD_NAME" /> 
+		<result property="MD_DEPT" column="MD_DEPT" /> 
+		<result property="MD_PROIMG" column="MD_PROIMG" /> 
+	</resultMap>
+
+	<select id="selectKnowhow" resultMap="getMap" parameterType="map">
+		select * 
+ 		from df_nohowboard2 A join df_design B ON trim(A.h_mnum) = trim(substr(B.mdno,2))
+		where 1=1
+			<if test="category != 'all'">
+			 and h_category = ${category}
+			</if>
+	</select>
+
+</mapper>
