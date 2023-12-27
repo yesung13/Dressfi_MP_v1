@@ -1,81 +1,75 @@
 package com.jang.dressfi.service;
 
+import com.jang.dressfi.model.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.jang.dressfi.model.AttFileVO;
-import com.jang.dressfi.model.BoardLikeVO;
-import com.jang.dressfi.model.BoardVO;
-import com.jang.dressfi.model.BoardViewVO;
-import com.jang.dressfi.model.ReplyLikeVO;
-import com.jang.dressfi.model.ReplyVO;
-import com.jang.dressfi.model.SearchVO;
-
 public interface BoardService {
 
-	StringBuffer getPageUrl(SearchVO seachVO);
+    StringBuffer getPageUrl(SearchVO seachVO);
 
-	List<BoardVO> getBoardList(SearchVO searchVO); // ±Û ¸ñ·ÏÁ¶È¸
+    List<BoardVO> getBoardList(SearchVO searchVO); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½È¸
 
-	List<BoardVO> getADBoardList();
-	
-	BoardVO getArticle(int bno); // ±ÛÁ¶È¸
+    List<BoardVO> getADBoardList();
 
-	int writeArticle(BoardVO board); // ±ÛÀúÀå
+    BoardVO getArticle(int bno); // ï¿½ï¿½ï¿½ï¿½È¸
 
-	int updateArticle(BoardVO board); // ±Û¼öÁ¤
+    int writeArticle(BoardVO board); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	void deleteArticle(int bno); // ±Û»èÁ¦
+    int updateArticle(BoardVO board); // ï¿½Û¼ï¿½ï¿½ï¿½
 
-	int getTotalRow(SearchVO searchVO); // ÀüÃ¼±Û ¼ö Á¶È¸
+    void deleteArticle(int bno); // ï¿½Û»ï¿½ï¿½ï¿½
 
-	int incrementViewCnt(int bno); // Á¶È¸¼ö Áõ°¡
+    int getTotalRow(SearchVO searchVO); // ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¸
 
-	int incrementGoodCnt(int bno); // ÁÁ¾Æ¿ä Ãß°¡
+    int incrementViewCnt(int bno); // ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	int incrementReplyCnt(int bno); // ´ñ±Û ¼ö Áõ°¡
+    int incrementGoodCnt(int bno); // ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ß°ï¿½
 
-	List<ReplyVO> getReplyList(int bno); // ´ñ±Û ¸ñ·ÏÁ¶È¸
+    int incrementReplyCnt(int bno); // ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	ReplyVO getReply(int rno); // ´ñ±Û Á¶È¸
+    List<ReplyVO> getReplyList(int bno); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½È¸
 
-	int writeReply(ReplyVO reply); // ´ñ±ÛÀúÀå
+    ReplyVO getReply(int rno); // ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
 
-	int updateReply(ReplyVO reply); // ´ñ±Û¼öÁ¤
+    int writeReply(ReplyVO reply); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	void deleteReply(int rno); // ´ñ±Û»èÁ¦
+    int updateReply(ReplyVO reply); // ï¿½ï¿½Û¼ï¿½ï¿½ï¿½
 
-	void deletReplyBubno(int bno); // ¿ø±Û¿¡ ¼Ò¼ÓµÈ ´ñ±Û ÀüÃ¼ »èÁ¦
+    void deleteReply(int rno); // ï¿½ï¿½Û»ï¿½ï¿½ï¿½
 
-	int incReplyGoodCnt(int rno); // ´ñ±Û ÁÁ¾Æ¿ä Áõ°¡
+    void deletReplyBubno(int bno); // ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½Ò¼Óµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 
-	List<AttFileVO> getFileList(int bno); // Ã·ºÎÆÄÀÏ ¸ñ·Ï Á¶È¸
+    int incReplyGoodCnt(int rno); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	String getFileName(int fno); // Ã·ºÎÆÄÀÏ ÀÌ¿ë Á¶È¸
+    List<AttFileVO> getFileList(int bno); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
 
-	int insertFile(AttFileVO file); // Ã·ºÎÆÄÀÏ ÀúÀå
+    String getFileName(int fno); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ ï¿½ï¿½È¸
 
-	void deleteFile(int fno); // Ã·ºÎÆÄÀÏ »èÁ¦
+    int insertFile(AttFileVO file); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	void deleteFileBybno(int bno); // ¿ø±Û¿¡ ¼Ò¼ÓµÈ Ã·ºÎÆÄÀÏ ÀüÃ¼ »èÁ¦
+    void deleteFile(int fno); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	int addBoardLike(BoardLikeVO boardLike); // id-Æ¯Á¤±Û ÁÁ¾Æ¿ä ±â·Ï ÀúÀå
+    void deleteFileBybno(int bno); // ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½Ò¼Óµï¿½ Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 
-	int getBoardLike(BoardLikeVO boardLike); // id-Æ¯Á¤±Û ÁÁ¾Æ¿ä ±â·Ï Á¶È¸
+    int addBoardLike(BoardLikeVO boardLike); // id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	int addReplyLike(ReplyLikeVO replyLike); // id-Æ¯Á¤´ñ±Û ÁÁ¾Æ¿ä ±â·Ï ÀúÀå
+    int getBoardLike(BoardLikeVO boardLike); // id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
 
-	int getReplyLike(ReplyLikeVO replyLike); // id-Æ¯Á¤´ñ±Û ÁÁ¾Æ¿ä ±â·Ï Á¶È¸
+    int addReplyLike(ReplyLikeVO replyLike); // id-Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	int addBoardView(BoardViewVO boardView); // id-Æ¯Á¤±Û Á¶È¸ÀÌ·Â ±â·Ï
+    int getReplyLike(ReplyLikeVO replyLike); // id-Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
 
-	int getBoardView(BoardViewVO boardView); // id-Æ¯Á¤±Û Á¶È¸ÀÌ·Â ÀÐ±â
-	
-	int increaseViewCnt(int bno);
+    int addBoardView(BoardViewVO boardView); // id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ì·ï¿½ ï¿½ï¿½ï¿½
 
-	void deleteReplyBybno(int bno);
+    int getBoardView(BoardViewVO boardView); // id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ì·ï¿½ ï¿½Ð±ï¿½
 
-	ArrayList<Map<String, Object>> selectKnowhow(Map<String, Object> item);
+    int increaseViewCnt(int bno);
+
+    void deleteReplyBybno(int bno);
+
+    ArrayList<Map<String, Object>> selectKnowhow(Map<String, Object> item);
 
 }

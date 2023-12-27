@@ -1,65 +1,60 @@
 package com.jang.dressfi.mapper;
 
-import java.util.List;
-
+import com.jang.dressfi.model.*;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.jang.dressfi.model.DesignVO;
-import com.jang.dressfi.model.FactoryVO;
-import com.jang.dressfi.model.MaterialVO;
-import com.jang.dressfi.model.SellerVO;
-import com.jang.dressfi.model.UserVO;
+import java.util.List;
 
 @Mapper
 public interface LoginMapper {
 
-	List<UserVO> getUserList();
+    List<UserVO> getUserList();
 
-	List<DesignVO> getMDUserList();
+    List<DesignVO> getMDUserList();
 
-	List<FactoryVO> getMFUserList();
+    List<FactoryVO> getMFUserList();
 
-	List<SellerVO> getMCUserList();
+    List<SellerVO> getMCUserList();
 
-	UserVO findUser(UserVO userVO);
+    UserVO findUser(UserVO userVO);
 
-	UserVO getssUser(String mno);
-	
-	UserVO getAdmin(UserVO userVO);
+    UserVO getssUser(String mno);
 
-	UserVO getUser(String userId); // ID Áßº¹È®ÀÎ
+    UserVO getAdmin(UserVO userVO);
 
-	UserVO getsUser(String username);
+    UserVO getUser(String userId); // ID ï¿½ßºï¿½È®ï¿½ï¿½
 
-	DesignVO getMDUser(String userId);
+    UserVO getsUser(String username);
 
-	FactoryVO getMFUser(String userId);
+    DesignVO getMDUser(String userId);
 
-	SellerVO getMCUser(String userId);
+    FactoryVO getMFUser(String userId);
 
-	void updatePass(UserVO userVO);
+    SellerVO getMCUser(String userId);
 
-	int updateUser(UserVO userVO); // Á¤º¸¼öÁ¤
+    void updatePass(UserVO userVO);
 
-	int insertMFUser(FactoryVO factoryVO);
+    int updateUser(UserVO userVO); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	int insertMCUser(SellerVO sellerVO);
+    int insertMFUser(FactoryVO factoryVO);
 
-	int insertMMUser(MaterialVO materialVO);
+    int insertMCUser(SellerVO sellerVO);
 
-	int insertMDUser(DesignVO designVO);
+    int insertMMUser(MaterialVO materialVO);
 
-	int insertUser(UserVO userVO); // È¸¿ø°¡ÀÔ
+    int insertMDUser(DesignVO designVO);
 
-	int deleteUser(UserVO userVO);
+    int insertUser(UserVO userVO); // È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	int MDdeleteUser(DesignVO designVO);
+    int deleteUser(UserVO userVO);
 
-	int MFdeleteUser(FactoryVO factoryVO);
+    int MDdeleteUser(DesignVO designVO);
 
-	int MCdeleteUser(SellerVO sellerVO);
+    int MFdeleteUser(FactoryVO factoryVO);
 
-	UserVO findId(UserVO userVO);
+    int MCdeleteUser(SellerVO sellerVO);
 
-	UserVO findPass(UserVO userVO);
+    UserVO findId(UserVO userVO);
+
+    UserVO findPass(UserVO userVO);
 }

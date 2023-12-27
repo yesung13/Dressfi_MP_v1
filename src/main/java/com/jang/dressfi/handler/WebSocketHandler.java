@@ -28,6 +28,5 @@
 //		NoteDao dao = sqlsession.getMapper(NoteDao.class);
 //		this.logger.info(message.getPayload());
 //		session.sendMessage(new TextMessage(dao.count_receive_note(message.getPayload())));
-//		// 현재 수신자에게 몇개의 메세지가 와있는지 디비에서 검색함.
 //	}
 //}

@@ -2,14 +2,14 @@ package com.jang.dressfi.utils;
 
 public class BcryptTEST {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String pass = "hello"; 
-		System.out.println("±×³É ¹®ÀÚ¿­ : "+pass); 
-		String hashPass = BCrypt.hashpw(pass, BCrypt.gensalt(12));
-		System.out.println("¾ÏÈ£È­µÈ String : "+hashPass); 
-		String pass2= "hello2"; 
-		System.out.println("ÆÐ½º¿öµå ºñ±³°á°ú(µ¿ÀÏ): "+BCrypt.checkpw(pass, hashPass)); 
-		System.out.println("ÆÐ½º¿öµå ºñ±³°á°ú(´Ù¸§): "+BCrypt.checkpw(pass2, hashPass));
-	}
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        String pass = "hello";
+        System.out.println("ï¿½×³ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ : " + pass);
+        String hashPass = BCrypt.hashpw(pass, BCrypt.gensalt(12));
+        System.out.println("ï¿½ï¿½È£È­ï¿½ï¿½ String : " + hashPass);
+        String pass2 = "hello2";
+        System.out.println("ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ñ±³°ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½): " + BCrypt.checkpw(pass, hashPass));
+        System.out.println("ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ñ±³°ï¿½ï¿½(ï¿½Ù¸ï¿½): " + BCrypt.checkpw(pass2, hashPass));
+    }
 }

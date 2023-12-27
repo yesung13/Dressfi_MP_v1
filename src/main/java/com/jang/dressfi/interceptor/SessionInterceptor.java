@@ -1,53 +1,52 @@
 package com.jang.dressfi.interceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 public class SessionInterceptor extends HandlerInterceptorAdapter {
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
-		Object userId = request.getSession().getAttribute("userId");
-// login.do ÀÌ³ª È¸¿ø°¡ÀÔÆäÀÌÁö¸¦ ½ÇÇàÇÏ·Á´Â °æ¿ì(/dressfi/member/join.do) ÀÌ¹Ì ·Î±×ÀÎ µÇ¾î ÀÖ´Â ÀÚ´Â ·Î±×ÀÎÀÌ³ª °¡ÀÔÀÌ ÇÊ¿ä¾øÀ½==>list.do
-		if (request.getRequestURI().equals("/dressfi/member/login.do")
-				|| request.getRequestURI().equals("/dressfi/member/adminlogin.do")
-				|| request.getRequestURI().equals("/dressfi/member/findId.do") 
-				|| request.getRequestURI().equals("/dressfi/member/findPass.do")
-				|| request.getRequestURI().equals("/dressfi/member/joinSelect.do") 
-				|| request.getRequestURI().equals("/dressfi/member/join.do")
-				|| request.getRequestURI().equals("/dressfi/member/mdjoin.do")
-				|| request.getRequestURI().equals("/dressfi/member/mmjoin.do")
-				|| request.getRequestURI().equals("/dressfi/member/mfjoin.do")
-				|| request.getRequestURI().equals("/dressfi/member/mcjoin.do")
-				|| request.getRequestURI().equals("/dressfi/member/joinPro.do") 
-				|| request.getRequestURI().equals("/dressfi/member/joinPro2.do")
-				|| request.getRequestURI().equals("/dressfi/member/joinPro3.do")
-				|| request.getRequestURI().equals("/dressfi/member/editpass.do") 
-				|| request.getRequestURI().equals("/dressfi/member/checkid.do")
-				|| request.getRequestURI().equals("/dressfi/member/ajaxlogin.do"))
-		{
-			if (userId != null) {
-				response.sendRedirect(request.getContextPath() + "/");
-				return true; // ½ÇÇà
-			} else {
-				return true; // login.do ½ÇÇà
-			}
-		}
-		if (userId == null) { // urlÀÌ /login or join.do °¡ ¾Æ´Ñ ¸ðµç °æ¿ì ·Î±×ÀÎ µÇ¾î ÀÖÁö¾ÊÀ¸¸é
-			response.sendRedirect(request.getContextPath() + "/member/login.do");
-			return false; // ÇöÀç URL ÆäÀÌÁö ½ÇÇà ¾Ê°í login.do ½ÇÇà
-		} else {
-			return true; // ÇöÀç URL
-			// ÆäÀÌÁö ½ÇÇà
-		}
-	}
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        Object userId = request.getSession().getAttribute("userId");
+// login.do ï¿½Ì³ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(/dressfi/member/join.do) ï¿½Ì¹ï¿½ ï¿½Î±ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ ï¿½Ú´ï¿½ ï¿½Î±ï¿½ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ï¿½==>list.do
+        if (request.getRequestURI().equals("/dressfi/member/login.do")
+                || request.getRequestURI().equals("/dressfi/member/adminlogin.do")
+                || request.getRequestURI().equals("/dressfi/member/findId.do")
+                || request.getRequestURI().equals("/dressfi/member/findPass.do")
+                || request.getRequestURI().equals("/dressfi/member/joinSelect.do")
+                || request.getRequestURI().equals("/dressfi/member/join.do")
+                || request.getRequestURI().equals("/dressfi/member/mdjoin.do")
+                || request.getRequestURI().equals("/dressfi/member/mmjoin.do")
+                || request.getRequestURI().equals("/dressfi/member/mfjoin.do")
+                || request.getRequestURI().equals("/dressfi/member/mcjoin.do")
+                || request.getRequestURI().equals("/dressfi/member/joinPro.do")
+                || request.getRequestURI().equals("/dressfi/member/joinPro2.do")
+                || request.getRequestURI().equals("/dressfi/member/joinPro3.do")
+                || request.getRequestURI().equals("/dressfi/member/editpass.do")
+                || request.getRequestURI().equals("/dressfi/member/checkid.do")
+                || request.getRequestURI().equals("/dressfi/member/ajaxlogin.do")) {
+            if (userId != null) {
+                response.sendRedirect(request.getContextPath() + "/");
+                return true; // ï¿½ï¿½ï¿½ï¿½
+            } else {
+                return true; // login.do ï¿½ï¿½ï¿½ï¿½
+            }
+        }
+        if (userId == null) { // urlï¿½ï¿½ /login or join.do ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Î±ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            response.sendRedirect(request.getContextPath() + "/member/login.do");
+            return false; // ï¿½ï¿½ï¿½ï¿½ URL ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ login.do ï¿½ï¿½ï¿½ï¿½
+        } else {
+            return true; // ï¿½ï¿½ï¿½ï¿½ URL
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        }
+    }
 
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception {
-	}
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) throws Exception {
+    }
 }

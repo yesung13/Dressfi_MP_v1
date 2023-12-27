@@ -2,52 +2,52 @@ package com.jang.dressfi.utils;
 
 public class PageHelper {
 
-	private int pageSize = 10; //
-	private int blockSize = 10; //
+    private int pageSize = 10; //
+    private int blockSize = 10; //
 
-	public int getPageSize() {
-		return pageSize;
-	}
+    public int getPageSize() {
+        return pageSize;
+    }
 
-	public int getBlockSize() {
-		return blockSize;
-	}
+    public int getBlockSize() {
+        return blockSize;
+    }
 
-	public StringBuffer getPageUrl(int currentPage, int totalRow) {
-		StringBuffer pageHtml = new StringBuffer();
-		int startPage = 0;
-		int endPage = 0;
-		startPage = ((currentPage - 1) / blockSize) * blockSize + 1;
-		endPage = startPage + blockSize - 1;
-		int totalPage = totalRow / pageSize + 1;
-		int totalBlock = totalPage / blockSize + 1;
-		int currentBlock = currentPage / blockSize + 1;
+    public StringBuffer getPageUrl(int currentPage, int totalRow) {
+        StringBuffer pageHtml = new StringBuffer();
+        int startPage = 0;
+        int endPage = 0;
+        startPage = ((currentPage - 1) / blockSize) * blockSize + 1;
+        endPage = startPage + blockSize - 1;
+        int totalPage = totalRow / pageSize + 1;
+        int totalBlock = totalPage / blockSize + 1;
+        int currentBlock = currentPage / blockSize + 1;
 
-		if (endPage > (totalRow / pageSize)) {
-			endPage = (totalRow / pageSize) + 1;
-		}
-		// ÇöÀç ºí·°ÀÌ 2 ÀÌ»óÀÎ °æ¿ì [ÀÌÀü] Ç¥½Ã
-		if (currentBlock > 1) {
-			pageHtml.append("<span><a href=\"list.do?page=" + (currentPage - 1) + "\"><ÀÌÀü></a>&nbsp;&nbsp;");
-		} else {
-			pageHtml.append("<span>");
-		}
-		// ÇöÀç ºí·°¾È¿¡ Æ÷ÇÔµÉ ÆäÀÌÁö Ç¥½Ã
-		for (int i = startPage; i <= endPage; i++) {
-			if (i == currentPage) {
-				pageHtml.append(".&nbsp;<strong>");
-				pageHtml.append(i);
-				pageHtml.append("&nbsp;</strong>");
-			} else {
-				pageHtml.append(".&nbsp;<a href=\"list.do?page=" + i + "\" class=\"page\">" + i + "</a>&nbsp;");
-			}
-		}
-		// ÇöÀç ºí·Ï ¾ÈÀÌ ÀüÃ¼ ºí·° º¸´Ù ÀÛÀ¸¸é [´ÙÀ½] Ç¥½Ã
-		if (currentBlock < totalBlock) {
-			pageHtml.append(".&nbsp;&nbsp;<a href=\"list.do?page=" + (currentPage + 1) + "\"><´ÙÀ½></a></span>");
-		} else {
-			pageHtml.append(".</span>");
-		}
-		return pageHtml;
-	}
+        if (endPage > (totalRow / pageSize)) {
+            endPage = (totalRow / pageSize) + 1;
+        }
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 2 ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ [ï¿½ï¿½ï¿½ï¿½] Ç¥ï¿½ï¿½
+        if (currentBlock > 1) {
+            pageHtml.append("<span><a href=\"list.do?page=" + (currentPage - 1) + "\"><ï¿½ï¿½ï¿½ï¿½></a>&nbsp;&nbsp;");
+        } else {
+            pageHtml.append("<span>");
+        }
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È¿ï¿½ ï¿½ï¿½ï¿½Ôµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+        for (int i = startPage; i <= endPage; i++) {
+            if (i == currentPage) {
+                pageHtml.append(".&nbsp;<strong>");
+                pageHtml.append(i);
+                pageHtml.append("&nbsp;</strong>");
+            } else {
+                pageHtml.append(".&nbsp;<a href=\"list.do?page=" + i + "\" class=\"page\">" + i + "</a>&nbsp;");
+            }
+        }
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ [ï¿½ï¿½ï¿½ï¿½] Ç¥ï¿½ï¿½
+        if (currentBlock < totalBlock) {
+            pageHtml.append(".&nbsp;&nbsp;<a href=\"list.do?page=" + (currentPage + 1) + "\"><ï¿½ï¿½ï¿½ï¿½></a></span>");
+        } else {
+            pageHtml.append(".</span>");
+        }
+        return pageHtml;
+    }
 }

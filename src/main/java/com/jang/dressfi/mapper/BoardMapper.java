@@ -1,61 +1,71 @@
 package com.jang.dressfi.mapper;
 
+import com.jang.dressfi.model.*;
+import org.apache.ibatis.annotations.Mapper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Mapper;
-
-import com.jang.dressfi.model.AttFileVO;
-import com.jang.dressfi.model.BoardLikeVO;
-import com.jang.dressfi.model.BoardVO;
-import com.jang.dressfi.model.BoardViewVO;
-import com.jang.dressfi.model.ReplyLikeVO;
-import com.jang.dressfi.model.ReplyVO;
-import com.jang.dressfi.model.SearchVO;
-
 @Mapper
 public interface BoardMapper {
 
-	List<BoardVO> getBoardList(SearchVO searchVO); //±Û ¸ñ·ÏÁ¶È¸
-	List<BoardVO> getADBoardList();
-	
-	BoardVO getArticle(int bno); 			//±ÛÁ¶È¸
-	int writeArticle(BoardVO board);		//±ÛÀúÀå
-	int updateArticle(BoardVO board);		//±Û¼öÁ¤
-	void deleteArticle(int bno);			//±Û»èÁ¦
-	
-	int getTotalRow(SearchVO searchVO);		//ÀüÃ¼±Û ¼ö Á¶È¸
-	
-	int incrementViewCnt(int bno);			//Á¶È¸¼ö Áõ°¡
-	int incrementGoodCnt(int bno);			//ÁÁ¾Æ¿ä Ãß°¡
-	int incrementReplyCnt(int bno);			//´ñ±Û ¼ö Áõ°¡
-	
-	List<ReplyVO> getReplyList(int bno);	//´ñ±Û ¸ñ·ÏÁ¶È¸
-	ReplyVO getReply(int rno);				//´ñ±Û Á¶È¸
-	
-	int writeReply(ReplyVO reply);			//´ñ±ÛÀúÀå
-	int updateReply(ReplyVO reply);			//´ñ±Û¼öÁ¤
-	void deleteReply(int rno);				//´ñ±Û»èÁ¦
-	void deleteReplyBybno(int bno);			//¿ø±Û¿¡ ¼Ò¼ÓµÈ ´ñ±Û ÀüÃ¼ »èÁ¦
-	
-	int incReplyGoodCnt(int rno);			//´ñ±Û ÁÁ¾Æ¿ä Áõ°¡
-	
-	List<AttFileVO> getFileList(int bno);	//Ã·ºÎÆÄÀÏ ¸ñ·Ï Á¶È¸
-	String getFileName(int fno);			//Ã·ºÎÆÄÀÏ ÀÌ¿ë Á¶È¸
-	int insertFile(AttFileVO file);			//Ã·ºÎÆÄÀÏ ÀúÀå
-	
-	void deleteFile(int fno);				//Ã·ºÎÆÄÀÏ »èÁ¦
-	void deleteFileBybno(int bno);			//¿ø±Û¿¡ ¼Ò¼ÓµÈ Ã·ºÎÆÄÀÏ ÀüÃ¼ »èÁ¦
-	
-	int addBoardLike(BoardLikeVO boardLike);	//id-Æ¯Á¤±Û ÁÁ¾Æ¿ä ±â·Ï ÀúÀå
-	int getBoardLike(BoardLikeVO boardLike);	//id-Æ¯Á¤±Û ÁÁ¾Æ¿ä ±â·Ï Á¶È¸
-	
-	int addReplyLike(ReplyLikeVO replyLike);	//id-Æ¯Á¤´ñ±Û ÁÁ¾Æ¿ä ±â·Ï ÀúÀå
-	int getReplyLike(ReplyLikeVO replyLike);	//id-Æ¯Á¤´ñ±Û ÁÁ¾Æ¿ä ±â·Ï Á¶È¸
-	
-	int addBoardView(BoardViewVO boardView);	//id-Æ¯Á¤±Û Á¶È¸ÀÌ·Â ±â·Ï
-	int getBoardView(BoardViewVO boardView);	//id-Æ¯Á¤±Û Á¶È¸ÀÌ·Â ÀÐ±â
-	ArrayList<Map<String, Object>> selectKnowhow(Map<String, Object> item);
-	
+    List<BoardVO> getBoardList(SearchVO searchVO); //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+
+    List<BoardVO> getADBoardList();
+
+    BoardVO getArticle(int bno);            //ï¿½ï¿½ï¿½ï¿½È¸
+
+    int writeArticle(BoardVO board);        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+    int updateArticle(BoardVO board);        //ï¿½Û¼ï¿½ï¿½ï¿½
+
+    void deleteArticle(int bno);            //ï¿½Û»ï¿½ï¿½ï¿½
+
+    int getTotalRow(SearchVO searchVO);        //ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¸
+
+    int incrementViewCnt(int bno);            //ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    int incrementGoodCnt(int bno);            //ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ß°ï¿½
+
+    int incrementReplyCnt(int bno);            //ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    List<ReplyVO> getReplyList(int bno);    //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+
+    ReplyVO getReply(int rno);                //ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
+
+    int writeReply(ReplyVO reply);            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+    int updateReply(ReplyVO reply);            //ï¿½ï¿½Û¼ï¿½ï¿½ï¿½
+
+    void deleteReply(int rno);                //ï¿½ï¿½Û»ï¿½ï¿½ï¿½
+
+    void deleteReplyBybno(int bno);            //ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½Ò¼Óµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
+
+    int incReplyGoodCnt(int rno);            //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    List<AttFileVO> getFileList(int bno);    //Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
+
+    String getFileName(int fno);            //Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ ï¿½ï¿½È¸
+
+    int insertFile(AttFileVO file);            //Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    void deleteFile(int fno);                //Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    void deleteFileBybno(int bno);            //ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½Ò¼Óµï¿½ Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
+
+    int addBoardLike(BoardLikeVO boardLike);    //id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    int getBoardLike(BoardLikeVO boardLike);    //id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
+
+    int addReplyLike(ReplyLikeVO replyLike);    //id-Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+    int getReplyLike(ReplyLikeVO replyLike);    //id-Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
+
+    int addBoardView(BoardViewVO boardView);    //id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ì·ï¿½ ï¿½ï¿½ï¿½
+
+    int getBoardView(BoardViewVO boardView);    //id-Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ì·ï¿½ ï¿½Ð±ï¿½
+
+    ArrayList<Map<String, Object>> selectKnowhow(Map<String, Object> item);
+
 }

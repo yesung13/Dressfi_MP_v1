@@ -1,58 +1,59 @@
 package com.jang.dressfi.service;
 
-import java.util.List;
-
 import com.jang.dressfi.model.DesignVO;
 import com.jang.dressfi.model.FactoryVO;
 import com.jang.dressfi.model.SellerVO;
 import com.jang.dressfi.model.UserVO;
 
+import java.util.List;
+
 public interface LoginService {
 
-	List<UserVO> getUserList();
+    List<UserVO> getUserList();
 
-	List<DesignVO> getMDUserList();
+    List<DesignVO> getMDUserList();
 
-	List<FactoryVO> getMFUserList();
+    List<FactoryVO> getMFUserList();
 
-	List<SellerVO> getMCUserList();
+    List<SellerVO> getMCUserList();
 
-	UserVO findUser(UserVO userVO);
+    UserVO findUser(UserVO userVO);
 
-	UserVO getssUser(String mno);
-	UserVO getUser(String userId);
+    UserVO getssUser(String mno);
 
-	UserVO getsUser(String username);
+    UserVO getUser(String userId);
 
-	DesignVO getMDUser(String userId);
+    UserVO getsUser(String username);
 
-	FactoryVO getMFUser(String userId);
+    DesignVO getMDUser(String userId);
 
-	SellerVO getMCUser(String userId);
+    FactoryVO getMFUser(String userId);
 
-	UserVO getAdmin(UserVO userVO);
+    SellerVO getMCUser(String userId);
 
-	void updatePass(UserVO userVO);
+    UserVO getAdmin(UserVO userVO);
 
-	int insertUser(UserVO userVO);
+    void updatePass(UserVO userVO);
 
-	int insertMDUser(DesignVO designVO);
+    int insertUser(UserVO userVO);
 
-	int insertMFUser(FactoryVO factoryVO);
+    int insertMDUser(DesignVO designVO);
 
-	int insertMCUser(SellerVO sellerVO);
+    int insertMFUser(FactoryVO factoryVO);
 
-	int updateUser(UserVO userVO);
+    int insertMCUser(SellerVO sellerVO);
 
-	int deleteUser(UserVO userVO);
+    int updateUser(UserVO userVO);
 
-	int MDdeleteUser(DesignVO designVO);
+    int deleteUser(UserVO userVO);
 
-	int MFdeleteUser(FactoryVO factoryVO);
+    int MDdeleteUser(DesignVO designVO);
 
-	int MCdeleteUser(SellerVO sellerVO);
+    int MFdeleteUser(FactoryVO factoryVO);
 
-	UserVO findId(UserVO userVO);
+    int MCdeleteUser(SellerVO sellerVO);
 
-	UserVO findPass(UserVO userVO);
+    UserVO findId(UserVO userVO);
+
+    UserVO findPass(UserVO userVO);
 }

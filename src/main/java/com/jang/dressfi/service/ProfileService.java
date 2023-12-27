@@ -1,145 +1,135 @@
 package com.jang.dressfi.service;
 
+import com.jang.dressfi.model.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.jang.dressfi.model.AttFileVO;
-import com.jang.dressfi.model.DesignVO;
-import com.jang.dressfi.model.FactoryVO;
-import com.jang.dressfi.model.FollowVO;
-import com.jang.dressfi.model.KnowHowVO;
-import com.jang.dressfi.model.PortFolioVO;
-import com.jang.dressfi.model.PsalVO;
-import com.jang.dressfi.model.SellerVO;
-import com.jang.dressfi.model.UserVO;
-import com.jang.dressfi.model.iReplyVO;
-import com.jang.dressfi.model.khReplyVO;
-
 public interface ProfileService {
 
-	List<UserVO> pgetuser();
+    List<UserVO> pgetuser();
 
-	List<DesignVO> pgetdesign(int ano1);
+    List<DesignVO> pgetdesign(int ano1);
 
-	List<FactoryVO> pgetfactory(int ano1);
+    List<FactoryVO> pgetfactory(int ano1);
 
-	List<SellerVO> pgetseller(int ano1);
+    List<SellerVO> pgetseller(int ano1);
 
-	List<FollowVO> pgetfl(String follower);
+    List<FollowVO> pgetfl(String follower);
 
-//	List<PortFolioVO> getdmain();
+    //	List<PortFolioVO> getdmain();
 //
 //	List<PortFolioVO> getfmain();
 //
 //	List<PortFolioVO> getcmain();
-	ArrayList<Map<String, Object>> getdmain();
-	
-	ArrayList<Map<String, Object>> getfmain();
-	
-	ArrayList<Map<String, Object>> getcmain();
+    ArrayList<Map<String, Object>> getdmain();
 
-	List<KnowHowVO> getkmain();
+    ArrayList<Map<String, Object>> getfmain();
 
-	void insertpsal(PsalVO psal);
+    ArrayList<Map<String, Object>> getcmain();
 
-	List<PsalVO> getsend(String userId);
+    List<KnowHowVO> getkmain();
 
-	List<PsalVO> getrec(String userId);
+    void insertpsal(PsalVO psal);
 
-	PsalVO getpsal(int prno);
+    List<PsalVO> getsend(String userId);
 
-	UserVO getProfile(String mno);
+    List<PsalVO> getrec(String userId);
 
-	DesignVO getMDProfile(String mdno);
+    PsalVO getpsal(int prno);
 
-	FactoryVO getMFProfile(String mfno);
+    UserVO getProfile(String mno);
 
-	SellerVO getMCProfile(String mcno);
+    DesignVO getMDProfile(String mdno);
 
-	void ilikecnt(int ino); // °Ô½Ã±Û ÁÁ¾Æ¿ä
+    FactoryVO getMFProfile(String mfno);
 
-	int iviewcnt(int ino); // °Ô½Ã±Û Á¶È¸¼ö Áõ°¡
+    SellerVO getMCProfile(String mcno);
 
-	void idelknow(int ino); // °Ô½Ã±Û »èÁ¦
+    void ilikecnt(int ino); // ï¿½Ô½Ã±ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½
 
-	void ideletereply(int rino); // ´ñ±Û »èÁ¦
+    int iviewcnt(int ino); // ï¿½Ô½Ã±ï¿½ ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	void ilikereplycnt(int rino); // ´ñ±Û ÁÁ¾Æ¿ä Áõ°¡
+    void idelknow(int ino); // ï¿½Ô½Ã±ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	int iwritereply(iReplyVO ireply); // ´ñ±Û ÀÛ¼º
+    void ideletereply(int rino); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	List<iReplyVO> igetreply(int ino); // ´ñ±Û º¸±â
+    void ilikereplycnt(int rino); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	void incfl(FollowVO followVO);// ÆÈ·Î¿ì Ãß°¡
+    int iwritereply(iReplyVO ireply); // ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½
 
-	void delfl(FollowVO followVO);// ÆÈ·Î¿ì »èÁ¦
+    List<iReplyVO> igetreply(int ino); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	List<FollowVO> getflerlist(String following);// ³» ÆÈ·Î¿ì º¸±â
+    void incfl(FollowVO followVO);// ï¿½È·Î¿ï¿½ ï¿½ß°ï¿½
 
-	List<FollowVO> getflinglist(String follower);// ³» ÆÈ·ÎÀ× º¸±â
+    void delfl(FollowVO followVO);// ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	FollowVO getfl(FollowVO followVO); // ÆÈ·Î¿ì ¿©ºÎ Ã¼Å©
+    List<FollowVO> getflerlist(String following);// ï¿½ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	// ³ëÇÏ¿ì°Ô½ÃÆÇ ÁÁ¾Æ¿ä, »èÁ¦
-	void likecnt(int hno);
+    List<FollowVO> getflinglist(String follower);// ï¿½ï¿½ ï¿½È·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	void likereplycnt(int rhno);
+    FollowVO getfl(FollowVO followVO); // ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
 
-	void delknow(int hno);
+    // ï¿½ï¿½ï¿½Ï¿ï¿½Ô½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½, ï¿½ï¿½ï¿½ï¿½
+    void likecnt(int hno);
 
-	int updateProfile(UserVO userVO);
+    void likereplycnt(int rhno);
 
-	int updateMDProfile(DesignVO designVO);
+    void delknow(int hno);
 
-	int updateMFProfile(FactoryVO factoryVO);
+    int updateProfile(UserVO userVO);
 
-	int updateMCProfile(SellerVO sellerVO);
+    int updateMDProfile(DesignVO designVO);
 
-	int updatePwd(UserVO userVO);
+    int updateMFProfile(FactoryVO factoryVO);
 
-	int updateMDPwd(DesignVO designVO);
+    int updateMCProfile(SellerVO sellerVO);
 
-	int updateMFPwd(FactoryVO factoryVO);
+    int updatePwd(UserVO userVO);
 
-	int updateMCPwd(SellerVO sellerVO);
+    int updateMDPwd(DesignVO designVO);
 
-	void deleteProfile(int mno); // ±Û»èÁ¦
+    int updateMFPwd(FactoryVO factoryVO);
 
-	void deletereply(int rhno);
+    int updateMCPwd(SellerVO sellerVO);
 
-	int kwritereply(khReplyVO khreply);
+    void deleteProfile(int mno); // ï¿½Û»ï¿½ï¿½ï¿½
 
-	List<khReplyVO> kgetreply(int hno);
+    void deletereply(int rhno);
 
-	int viewcnt(int hno);
+    int kwritereply(khReplyVO khreply);
 
-	List<AttFileVO> getFileList(int bno); // Ã·ºÎÆÄÀÏ ¸ñ·Ï Á¶È¸
+    List<khReplyVO> kgetreply(int hno);
 
-	AttFileVO getFile(int pno);
+    int viewcnt(int hno);
 
-	String getFileName(int fno); // Ã·ºÎÆÄÀÏ ÀÌ¿ë Á¶È¸
+    List<AttFileVO> getFileList(int bno); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½È¸
 
-	int insertFile(AttFileVO file); // Ã·ºÎÆÄÀÏ ÀúÀå
+    AttFileVO getFile(int pno);
 
-	void deleteFile(int fno); // Ã·ºÎÆÄÀÏ »èÁ¦
+    String getFileName(int fno); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ ï¿½ï¿½È¸
 
-	int insertPortFolio(PortFolioVO portfolioVO);
+    int insertFile(AttFileVO file); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	ArrayList<PortFolioVO> getPortFolio(PortFolioVO portfolioItem);
+    void deleteFile(int fno); // Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	PortFolioVO getPortFolioDeteil(PortFolioVO portfolioVO);
+    int insertPortFolio(PortFolioVO portfolioVO);
 
-	int insertKnowHow(KnowHowVO knowhowVO);
+    ArrayList<PortFolioVO> getPortFolio(PortFolioVO portfolioItem);
 
-	KnowHowVO getKnowHowDeteil(KnowHowVO knowhowVO);
+    PortFolioVO getPortFolioDeteil(PortFolioVO portfolioVO);
 
-	ArrayList<KnowHowVO> getKnowHow(KnowHowVO knowhowVO);
+    int insertKnowHow(KnowHowVO knowhowVO);
 
-	ArrayList<Map<String, Object>> selectDesign(Map<String, Object> item);
+    KnowHowVO getKnowHowDeteil(KnowHowVO knowhowVO);
 
-	ArrayList<Map<String, Object>> selectFactory(Map<String, Object> item);
+    ArrayList<KnowHowVO> getKnowHow(KnowHowVO knowhowVO);
 
-	ArrayList<Map<String, Object>> selectSeller(Map<String, Object> item);
+    ArrayList<Map<String, Object>> selectDesign(Map<String, Object> item);
+
+    ArrayList<Map<String, Object>> selectFactory(Map<String, Object> item);
+
+    ArrayList<Map<String, Object>> selectSeller(Map<String, Object> item);
 
 }

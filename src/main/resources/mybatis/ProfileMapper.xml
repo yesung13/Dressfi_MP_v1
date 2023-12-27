@@ -2,678 +2,678 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jang.dressfi.mapper.ProfileMapper">
 
-	<select id="getdmain" resultMap="getMap">
-		<![CDATA[select *
+    <select id="getdmain" resultMap="getMap">
+        <![CDATA[select *
 from df_imageboard A join df_design B ON trim(A.i_mnum) =trim(substr(B.mdno,2))
 where A.i_mdiv ='D' and A.i_mnum in(select
 trim(substr(mdno,2)) from df_design
 where 1=1) and ROWNUM <= 4
 		]]>
-	</select>
-	<select id="getfmain" resultMap="getMap">
-		<![CDATA[select *
+    </select>
+    <select id="getfmain" resultMap="getMap">
+        <![CDATA[select *
 from df_imageboard A join df_factory B ON trim(A.i_mnum) =trim(substr(B.mfno,2))
 where A.i_mdiv ='F' and A.i_mnum in(select
 trim(substr(mfno,2)) from df_factory
 where 1=1) and ROWNUM <= 4
 		]]>
-	</select>
-	<select id="getcmain" resultMap="getMap">
-		<![CDATA[select *
+    </select>
+    <select id="getcmain" resultMap="getMap">
+        <![CDATA[select *
 from df_imageboard A join df_seller B ON trim(A.i_mnum) =trim(substr(B.mcno,2))
 where A.i_mdiv ='S' and A.i_mnum in(select
 trim(substr(mcno,2)) from df_seller
 where 1=1) and ROWNUM <= 4
 		]]>
-	</select>
+    </select>
 
-	<!-- <select id="getfmain" resultType="PortFolioVO"> -->
-	<!-- <![CDATA[select * -->
-	<!-- from df_imageboard -->
-	
-	<!-- WHERE ROWNUM <= 4 and i_mdiv ='F' -->
-	<!-- order by i_viewcnt asc]]> -->
-	<!-- </select> -->
-	<!-- <select id="getcmain" resultType="PortFolioVO"> -->
-	<!-- <![CDATA[select * -->
-	<!-- from df_imageboard -->
-	<!-- WHERE ROWNUM <= 4 and i_mdiv ='C' -->
-	<!-- order by i_viewcnt asc]]> -->
-	<!-- </select> -->
-	<select id="getkmain" resultType="KnowHowVO">
-	<![CDATA[select *
+    <!-- <select id="getfmain" resultType="PortFolioVO"> -->
+    <!-- <![CDATA[select * -->
+    <!-- from df_imageboard -->
+
+    <!-- WHERE ROWNUM <= 4 and i_mdiv ='F' -->
+    <!-- order by i_viewcnt asc]]> -->
+    <!-- </select> -->
+    <!-- <select id="getcmain" resultType="PortFolioVO"> -->
+    <!-- <![CDATA[select * -->
+    <!-- from df_imageboard -->
+    <!-- WHERE ROWNUM <= 4 and i_mdiv ='C' -->
+    <!-- order by i_viewcnt asc]]> -->
+    <!-- </select> -->
+    <select id="getkmain" resultType="KnowHowVO">
+        <![CDATA[select *
 	from df_nohowboard2
 	WHERE ROWNUM <= 12 
 	order by h_viewcnt asc]]>
-	</select>
+    </select>
 
 
-	<select id="getsend" resultType="PsalVO">
-		select *
-		from df_proposal2
-		where
-		pr_sendid = #{userId}
-	</select>
-	<select id="getrec" resultType="PsalVO">
-		select *
-		from df_proposal2
-		where
-		pr_targetid = #{userId}
-	</select>
-	<select id="getpsal" resultType="PsalVO">
-		select *
-		from df_proposal2
-		where
-		prno = #{prno}
-	</select>
+    <select id="getsend" resultType="PsalVO">
+        select *
+        from df_proposal2
+        where
+        pr_sendid = #{userId}
+    </select>
+    <select id="getrec" resultType="PsalVO">
+        select *
+        from df_proposal2
+        where
+        pr_targetid = #{userId}
+    </select>
+    <select id="getpsal" resultType="PsalVO">
+        select *
+        from df_proposal2
+        where
+        prno = #{prno}
+    </select>
 
-	<insert id="insertpsal" keyProperty="prno">
-		<selectKey keyProperty="prno" resultType="int"
-			order="BEFORE">
-			SELECT
-			COALESCE(MAX(prno), 0) + 1 AS prno FROM
-			df_proposal2
-		</selectKey>
-		INSERT INTO
-		df_proposal2(prno, pr_sendid, pr_targetid, pr_title,
-		pr_context, pr_startdate, pr_enddate, pr_fileloc, pr_area)
-		VALUES(#{prno},
-		#{pr_sendid}, #{pr_targetid}, #{pr_title},
-		#{pr_context},
-		#{pr_startdate}, #{pr_enddate}, #{pr_fileloc},
-		#{pr_area})
-	</insert>
+    <insert id="insertpsal" keyProperty="prno">
+        <selectKey keyProperty="prno" resultType="int"
+                   order="BEFORE">
+            SELECT
+            COALESCE(MAX(prno), 0) + 1 AS prno FROM
+            df_proposal2
+        </selectKey>
+        INSERT INTO
+        df_proposal2(prno, pr_sendid, pr_targetid, pr_title,
+        pr_context, pr_startdate, pr_enddate, pr_fileloc, pr_area)
+        VALUES(#{prno},
+        #{pr_sendid}, #{pr_targetid}, #{pr_title},
+        #{pr_context},
+        #{pr_startdate}, #{pr_enddate}, #{pr_fileloc},
+        #{pr_area})
+    </insert>
 
-	<select id="pgetuser" resultType="UserVO">
-		select name
-		from df_loginview
-	</select>
-	<select id="pgetdesign" resultType="DesignVO">
-		select md_name
-		from df_design
-		where
-		<if test="value == 0">
-			1=1
-		</if>
-		<if test="value == 10">
-			md_ano1 = ${value} or md_ano2 = ${value} or md_ano3 =
-			${value}
-		</if>
-		<if test="value == 20">
-			md_ano1 = ${value} or md_ano2 = ${value} or md_ano3 =
-			${value}
-		</if>
-		<if test="value == 30">
-			md_ano1 = ${value} or md_ano2 = ${value} or md_ano3 =
-			${value}
-		</if>
+    <select id="pgetuser" resultType="UserVO">
+        select name
+        from df_loginview
+    </select>
+    <select id="pgetdesign" resultType="DesignVO">
+        select md_name
+        from df_design
+        where
+        <if test="value == 0">
+            1=1
+        </if>
+        <if test="value == 10">
+            md_ano1 = ${value} or md_ano2 = ${value} or md_ano3 =
+            ${value}
+        </if>
+        <if test="value == 20">
+            md_ano1 = ${value} or md_ano2 = ${value} or md_ano3 =
+            ${value}
+        </if>
+        <if test="value == 30">
+            md_ano1 = ${value} or md_ano2 = ${value} or md_ano3 =
+            ${value}
+        </if>
 
-	</select>
-	<select id="pgetfactory" resultType="FactoryVO">
-		select mf_name
-		from df_factory
-		where
-		<if test="value == 0">
-			1=1
-		</if>
-		<if test="value == 10">
-			mf_ano1 = ${value} or mf_ano2 = ${value} or mf_ano3 =
-			${value}
-		</if>
-		<if test="value == 20">
-			mf_ano1 = ${value} or mf_ano2 = ${value} or mf_ano3 =
-			${value}
-		</if>
-		<if test="value == 30">
-			mf_ano1 = ${value} or mf_ano2 = ${value} or mf_ano3 =
-			${value}
-		</if>
+    </select>
+    <select id="pgetfactory" resultType="FactoryVO">
+        select mf_name
+        from df_factory
+        where
+        <if test="value == 0">
+            1=1
+        </if>
+        <if test="value == 10">
+            mf_ano1 = ${value} or mf_ano2 = ${value} or mf_ano3 =
+            ${value}
+        </if>
+        <if test="value == 20">
+            mf_ano1 = ${value} or mf_ano2 = ${value} or mf_ano3 =
+            ${value}
+        </if>
+        <if test="value == 30">
+            mf_ano1 = ${value} or mf_ano2 = ${value} or mf_ano3 =
+            ${value}
+        </if>
 
-	</select>
-	<select id="pgetseller" resultType="SellerVO">
-		select mc_name
-		from df_seller
-		where
-		<if test="value == 0">
-			1=1
-		</if>
-		<if test="value == 10">
-			mc_ano1 = ${value} or mc_ano2 = ${value} or mc_ano3 =
-			${value}
-		</if>
-		<if test="value == 20">
-			mc_ano1 = ${value} or mc_ano2 = ${value} or mc_ano3 =
-			${value}
-		</if>
-		<if test="value == 30">
-			mc_ano1 = ${value} or mc_ano2 = ${value} or mc_ano3 =
-			${value}
-		</if>
-	</select>
-	<select id="pgetfl" resultType="FollowVO">
-		select following
-		from df_follow
-		where follower = '${value}'
-	</select>
+    </select>
+    <select id="pgetseller" resultType="SellerVO">
+        select mc_name
+        from df_seller
+        where
+        <if test="value == 0">
+            1=1
+        </if>
+        <if test="value == 10">
+            mc_ano1 = ${value} or mc_ano2 = ${value} or mc_ano3 =
+            ${value}
+        </if>
+        <if test="value == 20">
+            mc_ano1 = ${value} or mc_ano2 = ${value} or mc_ano3 =
+            ${value}
+        </if>
+        <if test="value == 30">
+            mc_ano1 = ${value} or mc_ano2 = ${value} or mc_ano3 =
+            ${value}
+        </if>
+    </select>
+    <select id="pgetfl" resultType="FollowVO">
+        select following
+        from df_follow
+        where follower = '${value}'
+    </select>
 
-	<delete id="ideletereply">
-		DELETE FROM df_replyimageboard
-		WHERE rino = #{rino}
-	</delete>
-	<update id="iviewcnt">
-		UPDATE df_imageboard
-		SET i_viewcnt = i_viewcnt + 1
-		WHERE ino = #{ino}
-	</update>
-	<update id="ilikecnt">
-		UPDATE df_imageboard
-		SET i_likecnt = i_likecnt + 1
-		WHERE ino = #{ino}
-	</update>
-	<update id="ilikereplycnt">
-		UPDATE df_replyimageboard
-		SET ri_likecnt = ri_likecnt
-		+ 1
-		WHERE rino = #{rino}
-	</update>
+    <delete id="ideletereply">
+        DELETE FROM df_replyimageboard
+        WHERE rino = #{rino}
+    </delete>
+    <update id="iviewcnt">
+        UPDATE df_imageboard
+        SET i_viewcnt = i_viewcnt + 1
+        WHERE ino = #{ino}
+    </update>
+    <update id="ilikecnt">
+        UPDATE df_imageboard
+        SET i_likecnt = i_likecnt + 1
+        WHERE ino = #{ino}
+    </update>
+    <update id="ilikereplycnt">
+        UPDATE df_replyimageboard
+        SET ri_likecnt = ri_likecnt
+        + 1
+        WHERE rino = #{rino}
+    </update>
 
-	<update id="ireplycnt">
-		UPDATE df_imageboard
-		SET i_replycnt = i_replycnt + 1
-		WHERE ino = #{ino}
-	</update>
+    <update id="ireplycnt">
+        UPDATE df_imageboard
+        SET i_replycnt = i_replycnt + 1
+        WHERE ino = #{ino}
+    </update>
 
-	<delete id="idelknow">
-		delete from df_imageboard
-		where ino = #{ino}
-	</delete>
+    <delete id="idelknow">
+        delete from df_imageboard
+        where ino = #{ino}
+    </delete>
 
-	<select id="igetreply" resultType="iReplyVO">
-		select *
-		from
-		df_replyimageboard
-		where ino = #{ino}
-	</select>
+    <select id="igetreply" resultType="iReplyVO">
+        select *
+        from
+        df_replyimageboard
+        where ino = #{ino}
+    </select>
 
-	<insert id="iwritereply" keyProperty="rino">
-		<selectKey keyProperty="rino" resultType="int"
-			order="BEFORE">
-			SELECT
-			COALESCE(MAX(rino), 0) + 1 AS rino FROM
-			df_replyimageboard
-		</selectKey>
-		INSERT INTO df_replyimageboard(rino, ino, ri_name, ri_text)
-		VALUES(#{rino}, #{ino}, #{ri_name}, #{ri_text})
-	</insert>
+    <insert id="iwritereply" keyProperty="rino">
+        <selectKey keyProperty="rino" resultType="int"
+                   order="BEFORE">
+            SELECT
+            COALESCE(MAX(rino), 0) + 1 AS rino FROM
+            df_replyimageboard
+        </selectKey>
+        INSERT INTO df_replyimageboard(rino, ino, ri_name, ri_text)
+        VALUES(#{rino}, #{ino}, #{ri_name}, #{ri_text})
+    </insert>
 
-	<insert id="incfl" keyProperty="fno">
-		<selectKey keyProperty="fno" resultType="int" order="BEFORE">
-			SELECT
-			COALESCE(MAX(fno), 0) + 1 AS fno FROM df_follow
-		</selectKey>
-		INSERT INTO df_follow(fno, following, follower, flimg, fwimg)
-		VALUES(#{fno},
-		#{following}, #{follower}, #{flimg}, #{fwimg})
-	</insert>
-	<delete id="delfl">
-		DELETE FROM df_follow
-		WHERE following = #{following}
-		AND
-		follower = #{follower}
-	</delete>
-	<select id="getflerlist" resultType="FollowVO">
-		select *
-		from
-		df_follow
-		where
-		following = #{following}
-	</select>
-	<select id="getflinglist" resultType="FollowVO">
-		select *
-		from
-		df_follow
-		where
-		follower = #{follower}
-	</select>
-	<select id="getfl" resultType="FollowVO">
-		select *
-		from
-		df_follow
-		where
-		following = #{following} and follower = #{follower}
-	</select>
+    <insert id="incfl" keyProperty="fno">
+        <selectKey keyProperty="fno" resultType="int" order="BEFORE">
+            SELECT
+            COALESCE(MAX(fno), 0) + 1 AS fno FROM df_follow
+        </selectKey>
+        INSERT INTO df_follow(fno, following, follower, flimg, fwimg)
+        VALUES(#{fno},
+        #{following}, #{follower}, #{flimg}, #{fwimg})
+    </insert>
+    <delete id="delfl">
+        DELETE FROM df_follow
+        WHERE following = #{following}
+        AND
+        follower = #{follower}
+    </delete>
+    <select id="getflerlist" resultType="FollowVO">
+        select *
+        from
+        df_follow
+        where
+        following = #{following}
+    </select>
+    <select id="getflinglist" resultType="FollowVO">
+        select *
+        from
+        df_follow
+        where
+        follower = #{follower}
+    </select>
+    <select id="getfl" resultType="FollowVO">
+        select *
+        from
+        df_follow
+        where
+        following = #{following} and follower = #{follower}
+    </select>
 
-	<select id="getProfile" resultType="UserVO">
-		SELECT *
-		FROM df_member
-		WHERE
-		mno=#{mno}
-	</select>
-	<select id="getMDProfile" resultType="DesignVO">
-		SELECT *
-		FROM df_design
-		WHERE mdno=#{mno}
-	</select>
-	<select id="getMFProfile" resultType="FactoryVO">
-		SELECT *
-		FROM df_factory
-		WHERE mfno=#{mno}
-	</select>
-	<select id="getMCProfile" resultType="SellerVO">
-		SELECT *
-		FROM df_seller
-		WHERE mcno=#{mno}
-	</select>
+    <select id="getProfile" resultType="UserVO">
+        SELECT *
+        FROM df_member
+        WHERE
+        mno=#{mno}
+    </select>
+    <select id="getMDProfile" resultType="DesignVO">
+        SELECT *
+        FROM df_design
+        WHERE mdno=#{mno}
+    </select>
+    <select id="getMFProfile" resultType="FactoryVO">
+        SELECT *
+        FROM df_factory
+        WHERE mfno=#{mno}
+    </select>
+    <select id="getMCProfile" resultType="SellerVO">
+        SELECT *
+        FROM df_seller
+        WHERE mcno=#{mno}
+    </select>
 
-	<insert id="insertProfile" keyProperty="pno">
-		<selectKey keyProperty="pno" resultType="int" order="BEFORE">
-			SELECT
-			COALESCE(MAX(pno), 0) + 1 AS pno FROM df_profile
-		</selectKey>
+    <insert id="insertProfile" keyProperty="pno">
+        <selectKey keyProperty="pno" resultType="int" order="BEFORE">
+            SELECT
+            COALESCE(MAX(pno), 0) + 1 AS pno FROM df_profile
+        </selectKey>
 
-		INSERT INTO df_profile(pno, mno, p_homepage, jno,
-		p_jobstartdate,
-		p_jobenddate, p_company, p_position, p_certificate,
-		p_introduce,
-		p_kakaourl, ano1, ano2, ano3)
-		VALUES(#{pno},
-		#{mno},
-		#{p_homepage},
-		#{jno},
-		#{p_jobstartdate}, #{p_jobenddate},
-		#{p_company},
-		#{p_position},
-		#{p_certificate},
-		#{p_introduce},
-		#{p_kakaourl}, #{ano1}, #{ano2},
-		#{ano3})
-	</insert>
+        INSERT INTO df_profile(pno, mno, p_homepage, jno,
+        p_jobstartdate,
+        p_jobenddate, p_company, p_position, p_certificate,
+        p_introduce,
+        p_kakaourl, ano1, ano2, ano3)
+        VALUES(#{pno},
+        #{mno},
+        #{p_homepage},
+        #{jno},
+        #{p_jobstartdate}, #{p_jobenddate},
+        #{p_company},
+        #{p_position},
+        #{p_certificate},
+        #{p_introduce},
+        #{p_kakaourl}, #{ano1}, #{ano2},
+        #{ano3})
+    </insert>
 
-	<insert id="kwritereply" keyProperty="rhno">
-		<selectKey keyProperty="rhno" resultType="int"
-			order="BEFORE">
-			SELECT
-			COALESCE(MAX(rhno), 0) + 1 AS rhno FROM
-			df_replynohowboard2
-		</selectKey>
+    <insert id="kwritereply" keyProperty="rhno">
+        <selectKey keyProperty="rhno" resultType="int"
+                   order="BEFORE">
+            SELECT
+            COALESCE(MAX(rhno), 0) + 1 AS rhno FROM
+            df_replynohowboard2
+        </selectKey>
 
-		INSERT INTO df_replynohowboard2(rhno, hno, rh_mdiv, rh_mnum, rh_name,
-		rh_text)
-		VALUES(#{rhno}, #{hno}, #{rh_mdiv}, #{rh_mnum},
-		#{rh_name},
-		#{rh_text})
-	</insert>
+        INSERT INTO df_replynohowboard2(rhno, hno, rh_mdiv, rh_mnum, rh_name,
+        rh_text)
+        VALUES(#{rhno}, #{hno}, #{rh_mdiv}, #{rh_mnum},
+        #{rh_name},
+        #{rh_text})
+    </insert>
 
 
-	<delete id="deletereply">
-		DELETE FROM df_replynohowboard2
-		WHERE rhno = #{rhno}
-	</delete>
-	<update id="viewcnt">
-		UPDATE df_nohowboard2
-		SET h_viewcnt = h_viewcnt + 1
-		WHERE hno = #{hno}
-	</update>
-	<update id="likecnt">
-		UPDATE df_nohowboard2
-		SET h_likecnt = h_likecnt + 1
-		WHERE hno = #{hno}
-	</update>
-	<update id="likereplycnt">
-		UPDATE df_replynohowboard2
-		SET rh_likecnt = rh_likecnt
-		+ 1
-		WHERE rhno = #{rhno}
-	</update>
+    <delete id="deletereply">
+        DELETE FROM df_replynohowboard2
+        WHERE rhno = #{rhno}
+    </delete>
+    <update id="viewcnt">
+        UPDATE df_nohowboard2
+        SET h_viewcnt = h_viewcnt + 1
+        WHERE hno = #{hno}
+    </update>
+    <update id="likecnt">
+        UPDATE df_nohowboard2
+        SET h_likecnt = h_likecnt + 1
+        WHERE hno = #{hno}
+    </update>
+    <update id="likereplycnt">
+        UPDATE df_replynohowboard2
+        SET rh_likecnt = rh_likecnt
+        + 1
+        WHERE rhno = #{rhno}
+    </update>
 
-	<update id="kreplycnt">
-		UPDATE df_nohowboard2
-		SET h_replycnt = h_replycnt + 1
-		WHERE hno = #{hno}
-	</update>
+    <update id="kreplycnt">
+        UPDATE df_nohowboard2
+        SET h_replycnt = h_replycnt + 1
+        WHERE hno = #{hno}
+    </update>
 
-	<delete id="delknow">
-		delete from df_nohowboard2
-		where hno = #{hno}
-	</delete>
+    <delete id="delknow">
+        delete from df_nohowboard2
+        where hno = #{hno}
+    </delete>
 
-	<select id="kgetreply" resultType="khReplyVO">
-		select *
-		from
-		df_replynohowboard2
-		where hno = #{hno}
-	</select>
-	<delete id="deleteProfile">
-		DELETE FROM df_profile
-		WHERE pno = #{pno}
-	</delete>
-	<select id="getFileList" resultType="AttFileVO">
-		SELECT fno, pno, ofilename,
-		sfilename, filesize
-		FROM df_profileimg
-		WHERE pno = #{pno}
-	</select>
+    <select id="kgetreply" resultType="khReplyVO">
+        select *
+        from
+        df_replynohowboard2
+        where hno = #{hno}
+    </select>
+    <delete id="deleteProfile">
+        DELETE FROM df_profile
+        WHERE pno = #{pno}
+    </delete>
+    <select id="getFileList" resultType="AttFileVO">
+        SELECT fno, pno, ofilename,
+        sfilename, filesize
+        FROM df_profileimg
+        WHERE pno = #{pno}
+    </select>
 
-	<select id="getFileName" resultType="String" parameterType="int">
-		SELECT ofilename
-		FROM df_profileimg
-		WHERE fno = #{fno}
-	</select>
+    <select id="getFileName" resultType="String" parameterType="int">
+        SELECT ofilename
+        FROM df_profileimg
+        WHERE fno = #{fno}
+    </select>
 
-	<select id="getFile" resultType="AttFileVO" parameterType="int">
-		SELECT *
-		FROM df_profileimg
-		WHERE pno = #{pno}
-	</select>
+    <select id="getFile" resultType="AttFileVO" parameterType="int">
+        SELECT *
+        FROM df_profileimg
+        WHERE pno = #{pno}
+    </select>
 
-	<insert id="insertFile" keyProperty="fno">
-		<selectKey keyProperty="fno" resultType="int" order="BEFORE">
-			select
-			coalesce(max(fno), 0) + 1 as fno
-			from df_profileimg
-		</selectKey>
-		insert into df_profileimg (fno, pno, ofilename, sfilename, filesize)
-		values
-		(#{fno}, #{pno}, #{ofilename}, #{sfilename}, #{filesize})
-	</insert>
+    <insert id="insertFile" keyProperty="fno">
+        <selectKey keyProperty="fno" resultType="int" order="BEFORE">
+            select
+            coalesce(max(fno), 0) + 1 as fno
+            from df_profileimg
+        </selectKey>
+        insert into df_profileimg (fno, pno, ofilename, sfilename, filesize)
+        values
+        (#{fno}, #{pno}, #{ofilename}, #{sfilename}, #{filesize})
+    </insert>
 
-	<delete id="deleteFile">
-		delete from df_profileimg
-		WHERE fno = #{fno}
-	</delete>
+    <delete id="deleteFile">
+        delete from df_profileimg
+        WHERE fno = #{fno}
+    </delete>
 
-	<update id="updateProfile" parameterType="UserVO">
-		UPDATE df_member
-		SET
-		phone
-		= #{phone}, homepage = #{homepage}, introduce = #{introduce},
-		kakaourl = #{kakaourl}
-		WHERE mno = #{mno}
-	</update>
+    <update id="updateProfile" parameterType="UserVO">
+        UPDATE df_member
+        SET
+        phone
+        = #{phone}, homepage = #{homepage}, introduce = #{introduce},
+        kakaourl = #{kakaourl}
+        WHERE mno = #{mno}
+    </update>
 
-	<update id="updateMDProfile" parameterType="DesignVO">
-		UPDATE df_design
-		SET
-		md_phone
-		= #{md_phone}, md_homepage = #{md_homepage}, md_dept =
-		#{md_dept}, md_career = #{md_career}, md_business = #{md_business},
-		md_bnum = #{md_bnum}, md_bname = #{md_bname}, md_bzip = #{md_bzip},
-		md_badd1 = #{md_badd1}, md_badd2 = #{md_badd2}, md_ano1 =
-		#{md_ano1},
-		md_ano2 = #{md_ano2}, md_ano3 = #{md_ano3}, md_introduce =
-		#{md_introduce},
-		md_kakaourl = #{md_kakaourl}
-		WHERE mdno = #{mdno}
-	</update>
-	<update id="updateMFProfile" parameterType="FactoryVO">
-		UPDATE df_factory
-		SET
-		mf_phone
-		= #{mf_phone}, mf_homepage = #{mf_homepage}, mf_dept =
-		#{mf_dept}, mf_business = #{mf_business},
-		mf_bnum = #{mf_bnum},
-		mf_bname = #{mf_bname}, mf_bzip = #{mf_bzip},
-		mf_badd1 = #{mf_badd1},
-		mf_badd2 = #{mf_badd2}, mf_ano1 =
-		#{mf_ano1},
-		mf_ano2 = #{mf_ano2},
-		mf_ano3 = #{mf_ano3}, mf_introduce =
-		#{mf_introduce},
-		mf_kakaourl =
-		#{mf_kakaourl}
-		WHERE mfno = #{mfno}
-	</update>
-	<update id="updateMCProfile" parameterType="SellerVO">
-		UPDATE df_seller
-		SET
-		mc_phone
-		= #{mc_phone}, mc_homepage = #{mc_homepage}, mc_div =
-		#{mc_div}, mc_dept =
-		#{mc_dept}, mc_subdept = #{mc_subdept},
-		mc_business = #{mc_business},
-		mc_bnum = #{mc_bnum}, mc_bname =
-		#{mc_bname}, mc_bzip = #{mc_bzip},
-		mc_badd1 = #{mc_badd1}, mc_badd2 =
-		#{mc_badd2}, mc_ano1 =
-		#{mc_ano1},
-		mc_ano2 = #{mc_ano2}, mc_ano3 =
-		#{mc_ano3}, mc_introduce =
-		#{mc_introduce},
-		mc_kakaourl = #{mc_kakaourl}
-		WHERE mcno = #{mcno}
-	</update>
-	<update id="updatePwd">
-		UPDATE df_member
-		SET
-		passwd = #{passwd}
-		WHERE userId =
-		#{userId}
-	</update>
-	<update id="updateMDPwd">
-		UPDATE df_design
-		SET
-		md_passwd = #{md_passwd}
-		WHERE
-		md_userId =
-		#{md_userId}
-	</update>
-	<update id="updateMFPwd">
-		UPDATE df_factory
-		SET
-		mf_passwd = #{mf_passwd}
-		WHERE
-		mf_userId =
-		#{mf_userId}
-	</update>
-	<update id="updateMCPwd">
-		UPDATE df_seller
-		SET
-		mc_passwd = #{mc_passwd}
-		WHERE
-		mc_userId =
-		#{mc_userId}
-	</update>
+    <update id="updateMDProfile" parameterType="DesignVO">
+        UPDATE df_design
+        SET
+        md_phone
+        = #{md_phone}, md_homepage = #{md_homepage}, md_dept =
+        #{md_dept}, md_career = #{md_career}, md_business = #{md_business},
+        md_bnum = #{md_bnum}, md_bname = #{md_bname}, md_bzip = #{md_bzip},
+        md_badd1 = #{md_badd1}, md_badd2 = #{md_badd2}, md_ano1 =
+        #{md_ano1},
+        md_ano2 = #{md_ano2}, md_ano3 = #{md_ano3}, md_introduce =
+        #{md_introduce},
+        md_kakaourl = #{md_kakaourl}
+        WHERE mdno = #{mdno}
+    </update>
+    <update id="updateMFProfile" parameterType="FactoryVO">
+        UPDATE df_factory
+        SET
+        mf_phone
+        = #{mf_phone}, mf_homepage = #{mf_homepage}, mf_dept =
+        #{mf_dept}, mf_business = #{mf_business},
+        mf_bnum = #{mf_bnum},
+        mf_bname = #{mf_bname}, mf_bzip = #{mf_bzip},
+        mf_badd1 = #{mf_badd1},
+        mf_badd2 = #{mf_badd2}, mf_ano1 =
+        #{mf_ano1},
+        mf_ano2 = #{mf_ano2},
+        mf_ano3 = #{mf_ano3}, mf_introduce =
+        #{mf_introduce},
+        mf_kakaourl =
+        #{mf_kakaourl}
+        WHERE mfno = #{mfno}
+    </update>
+    <update id="updateMCProfile" parameterType="SellerVO">
+        UPDATE df_seller
+        SET
+        mc_phone
+        = #{mc_phone}, mc_homepage = #{mc_homepage}, mc_div =
+        #{mc_div}, mc_dept =
+        #{mc_dept}, mc_subdept = #{mc_subdept},
+        mc_business = #{mc_business},
+        mc_bnum = #{mc_bnum}, mc_bname =
+        #{mc_bname}, mc_bzip = #{mc_bzip},
+        mc_badd1 = #{mc_badd1}, mc_badd2 =
+        #{mc_badd2}, mc_ano1 =
+        #{mc_ano1},
+        mc_ano2 = #{mc_ano2}, mc_ano3 =
+        #{mc_ano3}, mc_introduce =
+        #{mc_introduce},
+        mc_kakaourl = #{mc_kakaourl}
+        WHERE mcno = #{mcno}
+    </update>
+    <update id="updatePwd">
+        UPDATE df_member
+        SET
+        passwd = #{passwd}
+        WHERE userId =
+        #{userId}
+    </update>
+    <update id="updateMDPwd">
+        UPDATE df_design
+        SET
+        md_passwd = #{md_passwd}
+        WHERE
+        md_userId =
+        #{md_userId}
+    </update>
+    <update id="updateMFPwd">
+        UPDATE df_factory
+        SET
+        mf_passwd = #{mf_passwd}
+        WHERE
+        mf_userId =
+        #{mf_userId}
+    </update>
+    <update id="updateMCPwd">
+        UPDATE df_seller
+        SET
+        mc_passwd = #{mc_passwd}
+        WHERE
+        mc_userId =
+        #{mc_userId}
+    </update>
 
-	<insert id="insertPortFolio"
-		parameterType="com.jang.dressfi.model.PortFolioVO" keyProperty="ino">
-		<selectKey keyProperty="ino" resultType="int" order="BEFORE">
-			SELECT
-			COALESCE(MAX(ino), 0) + 1 AS ino FROM df_imageboard
-		</selectKey>
+    <insert id="insertPortFolio"
+            parameterType="com.jang.dressfi.model.PortFolioVO" keyProperty="ino">
+        <selectKey keyProperty="ino" resultType="int" order="BEFORE">
+            SELECT
+            COALESCE(MAX(ino), 0) + 1 AS ino FROM df_imageboard
+        </selectKey>
 
-		INSERT INTO df_imageboard(ino,
-		i_mdiv,
-		i_mnum,
-		i_title,
-		i_text,
-		i_regdate,
-		i_fileloc
-		)
-		VALUES(#{ino},
-		#{i_mdiv},
-		#{i_mnum},
-		#{i_title},
-		#{i_text},
-		sysdate,
-		#{i_fileloc}
-		)
-	</insert>
+        INSERT INTO df_imageboard(ino,
+        i_mdiv,
+        i_mnum,
+        i_title,
+        i_text,
+        i_regdate,
+        i_fileloc
+        )
+        VALUES(#{ino},
+        #{i_mdiv},
+        #{i_mnum},
+        #{i_title},
+        #{i_text},
+        sysdate,
+        #{i_fileloc}
+        )
+    </insert>
 
-	<select id="getPortFolio"
-		resultType="com.jang.dressfi.model.PortFolioVO"
-		parameterType="com.jang.dressfi.model.PortFolioVO">
-		SELECT ino, i_mdiv, i_mnum, i_title, i_text, i_viewcnt,
-		i_likecnt, i_replycnt, i_regdate, i_fileloc
-		FROM df_imageboard
-		WHERE
-		i_mdiv = #{i_mdiv} and i_mnum = #{i_mnum}
-	</select>
+    <select id="getPortFolio"
+            resultType="com.jang.dressfi.model.PortFolioVO"
+            parameterType="com.jang.dressfi.model.PortFolioVO">
+        SELECT ino, i_mdiv, i_mnum, i_title, i_text, i_viewcnt,
+        i_likecnt, i_replycnt, i_regdate, i_fileloc
+        FROM df_imageboard
+        WHERE
+        i_mdiv = #{i_mdiv} and i_mnum = #{i_mnum}
+    </select>
 
-	<select id="getPortFolioDeteil"
-		resultType="com.jang.dressfi.model.PortFolioVO"
-		parameterType="com.jang.dressfi.model.PortFolioVO">
-		SELECT ino, i_mdiv, i_mnum, i_title, i_text, i_viewcnt,
-		i_likecnt, i_replycnt, i_regdate, i_fileloc
-		FROM df_imageboard
-		WHERE ino
-		= #{ino}
-	</select>
+    <select id="getPortFolioDeteil"
+            resultType="com.jang.dressfi.model.PortFolioVO"
+            parameterType="com.jang.dressfi.model.PortFolioVO">
+        SELECT ino, i_mdiv, i_mnum, i_title, i_text, i_viewcnt,
+        i_likecnt, i_replycnt, i_regdate, i_fileloc
+        FROM df_imageboard
+        WHERE ino
+        = #{ino}
+    </select>
 
-	<insert id="insertKnowHow"
-		parameterType="com.jang.dressfi.model.KnowHowVO">
-		INSERT INTO df_nohowboard2(
-		h_category,
-		h_mdiv,
-		h_mnum,
-		h_name,
-		h_title,
-		h_text,
-		h_regdate,
-		h_fileloc
-		)
-		VALUES(
-		#{h_category},
-		#{h_mdiv},
-		#{h_mnum},
-		#{h_name},
-		#{h_title},
-		#{h_text},
-		sysdate,
-		#{h_fileloc}
-		)
-	</insert>
+    <insert id="insertKnowHow"
+            parameterType="com.jang.dressfi.model.KnowHowVO">
+        INSERT INTO df_nohowboard2(
+        h_category,
+        h_mdiv,
+        h_mnum,
+        h_name,
+        h_title,
+        h_text,
+        h_regdate,
+        h_fileloc
+        )
+        VALUES(
+        #{h_category},
+        #{h_mdiv},
+        #{h_mnum},
+        #{h_name},
+        #{h_title},
+        #{h_text},
+        sysdate,
+        #{h_fileloc}
+        )
+    </insert>
 
-	<select id="getKnowHow"
-		resultType="com.jang.dressfi.model.KnowHowVO"
-		parameterType="com.jang.dressfi.model.KnowHowVO">
-		SELECT hno, h_mdiv, h_mnum, h_title, h_text, h_viewcnt,
-		h_likecnt, h_replycnt, h_regdate, h_fileloc, h_category
-		FROM
-		df_nohowboard2
-		WHERE h_mdiv = #{h_mdiv} and h_mnum = #{h_mnum}
-	</select>
+    <select id="getKnowHow"
+            resultType="com.jang.dressfi.model.KnowHowVO"
+            parameterType="com.jang.dressfi.model.KnowHowVO">
+        SELECT hno, h_mdiv, h_mnum, h_title, h_text, h_viewcnt,
+        h_likecnt, h_replycnt, h_regdate, h_fileloc, h_category
+        FROM
+        df_nohowboard2
+        WHERE h_mdiv = #{h_mdiv} and h_mnum = #{h_mnum}
+    </select>
 
-	<select id="getKnowHowDeteil"
-		resultType="com.jang.dressfi.model.KnowHowVO"
-		parameterType="com.jang.dressfi.model.KnowHowVO">
-		SELECT hno, h_mdiv, h_mnum, h_title, h_text,
-		h_viewcnt,h_name,
-		h_likecnt, h_replycnt, h_regdate, h_fileloc,
-		h_category
-		FROM
-		df_nohowboard2
-		WHERE hno = #{hno}
-	</select>
+    <select id="getKnowHowDeteil"
+            resultType="com.jang.dressfi.model.KnowHowVO"
+            parameterType="com.jang.dressfi.model.KnowHowVO">
+        SELECT hno, h_mdiv, h_mnum, h_title, h_text,
+        h_viewcnt,h_name,
+        h_likecnt, h_replycnt, h_regdate, h_fileloc,
+        h_category
+        FROM
+        df_nohowboard2
+        WHERE hno = #{hno}
+    </select>
 
-	<resultMap id="getMap" type="HashMap">
-		<result property="INO" column="INO" />
-		<result property="I_MDIV" column="I_MDIV" />
-		<result property="I_MNUM" column="I_MNUM" />
-		<result property="I_TITLE" column="I_TITLE" />
-		<result property="I_TEXT" column="I_TEXT" />
-		<result property="I_FILELOC" column="I_FILELOC" jdbcType="CLOB"
-			javaType="java.lang.String" />
-		<result property="I_VIEWCNT" column="I_VIEWCNT" />
-		<result property="I_LIKECNT" column="I_LIKECNT" />
-		<result property="I_REPLYCNT" column="I_REPLYCNT" />
-		<result property="I_REGDATE" column="I_REGDATE" />
-		<result property="MD_NAME" column="MD_NAME" />
-		<result property="MD_DEPT" column="MD_DEPT" />
-		<result property="MD_PROIMG" column="MD_PROIMG" />
-		<result property="MF_NAME" column="MF_NAME" />
-		<result property="MF_DEPT" column="MF_DEPT" />
-		<result property="MF_PROIMG" column="MF_PROIMG" />
-		<result property="MC_NAME" column="MC_NAME" />
-		<result property="MC_DEPT" column="MC_DEPT" />
-		<result property="MC_PROIMG" column="MC_PROIMG" />
-	</resultMap>
+    <resultMap id="getMap" type="HashMap">
+        <result property="INO" column="INO"/>
+        <result property="I_MDIV" column="I_MDIV"/>
+        <result property="I_MNUM" column="I_MNUM"/>
+        <result property="I_TITLE" column="I_TITLE"/>
+        <result property="I_TEXT" column="I_TEXT"/>
+        <result property="I_FILELOC" column="I_FILELOC" jdbcType="CLOB"
+                javaType="java.lang.String"/>
+        <result property="I_VIEWCNT" column="I_VIEWCNT"/>
+        <result property="I_LIKECNT" column="I_LIKECNT"/>
+        <result property="I_REPLYCNT" column="I_REPLYCNT"/>
+        <result property="I_REGDATE" column="I_REGDATE"/>
+        <result property="MD_NAME" column="MD_NAME"/>
+        <result property="MD_DEPT" column="MD_DEPT"/>
+        <result property="MD_PROIMG" column="MD_PROIMG"/>
+        <result property="MF_NAME" column="MF_NAME"/>
+        <result property="MF_DEPT" column="MF_DEPT"/>
+        <result property="MF_PROIMG" column="MF_PROIMG"/>
+        <result property="MC_NAME" column="MC_NAME"/>
+        <result property="MC_DEPT" column="MC_DEPT"/>
+        <result property="MC_PROIMG" column="MC_PROIMG"/>
+    </resultMap>
 
-	<select id="selectDesign" resultMap="getMap" parameterType="map">
-		select *
-		from df_imageboard A join df_design B ON trim(A.i_mnum) =
-		trim(substr(B.mdno,2))
-		where A.i_mdiv ='D' and A.i_mnum in(
-		select
-		trim(substr(mdno,2)) from df_design
-		where 1=1
-		<if test="select2 != 0">
-			and md_dept = ${select2}
-		</if>
-		<if test="select3 != 0">
-			and md_career = ${select3}
-		</if>
-		<if test="select4 != 0">
-			and md_ano1 = ${select4}
-		</if>
-		)
-		<if test="select1 == 1">
-			order by i_regdate desc
-		</if>
-		<if test="select1 == 2">
-			order by i_viewcnt desc
-		</if>
-		<if test="select1 == 3">
-			order by i_likecnt desc
-		</if>
-	</select>
+    <select id="selectDesign" resultMap="getMap" parameterType="map">
+        select *
+        from df_imageboard A join df_design B ON trim(A.i_mnum) =
+        trim(substr(B.mdno,2))
+        where A.i_mdiv ='D' and A.i_mnum in(
+        select
+        trim(substr(mdno,2)) from df_design
+        where 1=1
+        <if test="select2 != 0">
+            and md_dept = ${select2}
+        </if>
+        <if test="select3 != 0">
+            and md_career = ${select3}
+        </if>
+        <if test="select4 != 0">
+            and md_ano1 = ${select4}
+        </if>
+        )
+        <if test="select1 == 1">
+            order by i_regdate desc
+        </if>
+        <if test="select1 == 2">
+            order by i_viewcnt desc
+        </if>
+        <if test="select1 == 3">
+            order by i_likecnt desc
+        </if>
+    </select>
 
-	<select id="selectFactory" resultMap="getMap"
-		parameterType="map">
-		select *
-		from df_imageboard A join df_factory B ON trim(A.i_mnum) =
-		trim(substr(B.mfno,2))
-		where A.i_mdiv ='F' and A.i_mnum in(
-		select
-		trim(substr(mfno,2)) from df_factory
-		where 1=1
-		<if test="select2 != 0">
-			and mf_dept = ${select2}
-		</if>
-		<if test="select3 != 0">
-			and mf_ano1 = ${select3}
-		</if>
-		)
-		<if test="select1 == 1">
-			order by i_regdate desc
-		</if>
-		<if test="select1 == 2">
-			order by i_viewcnt desc
-		</if>
-		<if test="select1 == 3">
-			order by i_likecnt desc
-		</if>
-	</select>
+    <select id="selectFactory" resultMap="getMap"
+            parameterType="map">
+        select *
+        from df_imageboard A join df_factory B ON trim(A.i_mnum) =
+        trim(substr(B.mfno,2))
+        where A.i_mdiv ='F' and A.i_mnum in(
+        select
+        trim(substr(mfno,2)) from df_factory
+        where 1=1
+        <if test="select2 != 0">
+            and mf_dept = ${select2}
+        </if>
+        <if test="select3 != 0">
+            and mf_ano1 = ${select3}
+        </if>
+        )
+        <if test="select1 == 1">
+            order by i_regdate desc
+        </if>
+        <if test="select1 == 2">
+            order by i_viewcnt desc
+        </if>
+        <if test="select1 == 3">
+            order by i_likecnt desc
+        </if>
+    </select>
 
-	<select id="selectSeller" resultMap="getMap" parameterType="map">
-		select *
-		from df_imageboard A join df_seller B ON trim(A.i_mnum) =
-		trim(substr(B.mcno,2))
-		where A.i_mdiv ='S' and A.i_mnum in(
-		select
-		trim(substr(mcno,2)) from df_seller
-		where 1=1
-		<if test="select2 != 0">
-			and mc_div = #{select2}
-		</if>
-		<if test="select3 != 0">
-			and mc_dept = #{select3}
-		</if>
-		<if test="select4 != 0">
-			and mc_subdept = #{select4}
+    <select id="selectSeller" resultMap="getMap" parameterType="map">
+        select *
+        from df_imageboard A join df_seller B ON trim(A.i_mnum) =
+        trim(substr(B.mcno,2))
+        where A.i_mdiv ='S' and A.i_mnum in(
+        select
+        trim(substr(mcno,2)) from df_seller
+        where 1=1
+        <if test="select2 != 0">
+            and mc_div = #{select2}
+        </if>
+        <if test="select3 != 0">
+            and mc_dept = #{select3}
+        </if>
+        <if test="select4 != 0">
+            and mc_subdept = #{select4}
 
-		</if>
-		<if test="select5 != 0">
-			and mc_ano1 = #{select5}
-		</if>
-		)
-		<if test="select1 == 1">
-			order by i_regdate desc
-		</if>
-		<if test="select1 == 2">
-			order by i_viewcnt desc
-		</if>
-		<if test="select1 == 3">
-			order by i_likecnt desc
-		</if>
-	</select>
+        </if>
+        <if test="select5 != 0">
+            and mc_ano1 = #{select5}
+        </if>
+        )
+        <if test="select1 == 1">
+            order by i_regdate desc
+        </if>
+        <if test="select1 == 2">
+            order by i_viewcnt desc
+        </if>
+        <if test="select1 == 3">
+            order by i_likecnt desc
+        </if>
+    </select>
 </mapper>

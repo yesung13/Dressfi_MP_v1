@@ -38,7 +38,7 @@
 //
 //			WebSocketSession session) throws Exception {
 //
-//		log(session.getId() + " ¿¬°á µÊ!!");
+//		log(session.getId() + " ì—°ê²° ë¨!!");
 //
 //		users.put(session.getId(), session);
 //		connectedUsers.add(session);
@@ -50,7 +50,7 @@
 //
 //			WebSocketSession session, CloseStatus status) throws Exception {
 //
-//		log(session.getId() + " ¿¬°á Á¾·áµÊ");
+//		log(session.getId() + " ì—°ê²° ì¢…ë£Œë¨");
 //		connectedUsers.remove(session);
 //		users.remove(session.getId());
 //
@@ -71,9 +71,9 @@
 //
 //
 //	      ChatRoomVO roomVO  = new ChatRoomVO();
-//	      roomVO.setCLASS_class_id(messageVO.getCLASS_class_id()); //Å¬·¡½º
-//	      roomVO.setTUTOR_USER_user_id(messageVO.getTUTOR_USER_user_id()); //Æ©ÅÍ
-//	      roomVO.setUSER_user_id(messageVO.getUSER_user_id()); //À¯Àú
+//	      roomVO.setCLASS_class_id(messageVO.getCLASS_class_id()); //í´ë˜ìŠ¤
+//	      roomVO.setTUTOR_USER_user_id(messageVO.getTUTOR_USER_user_id()); //íŠœí„°
+//	      roomVO.setUSER_user_id(messageVO.getUSER_user_id()); //ìœ ì €
 //
 //	      ChatRoomVO croom =null;
 //	      if(!messageVO.getUSER_user_id().equals(messageVO.getTUTOR_USER_user_id())) {
@@ -111,7 +111,7 @@
 //	         map = websocketSession.getAttributes();
 //	         UserVO login = (UserVO) map.get("login");
 //
-//	         //¹Ş´Â»ç¶÷
+//	         //ë°›ëŠ”ì‚¬ëŒ
 //	         if (login.getUserId().equals(messageVO.getMessage_sender())) {
 //
 //	            Gson gson = new Gson();
@@ -129,7 +129,7 @@
 //
 //			WebSocketSession session, Throwable exception) throws Exception {
 //
-//		log(session.getId() + " ÀÍ¼Á¼Ç ¹ß»ı: " + exception.getMessage());
+//		log(session.getId() + " ìµì…‰ì…˜ ë°œìƒ: " + exception.getMessage());
 //
 //	}
 //

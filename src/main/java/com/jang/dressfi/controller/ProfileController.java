@@ -1,2673 +1,2659 @@
 package com.jang.dressfi.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-
+import com.jang.dressfi.model.*;
+import com.jang.dressfi.service.LoginService;
+import com.jang.dressfi.service.ProfileService;
+import com.jang.dressfi.utils.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.jang.dressfi.model.DesignVO;
-import com.jang.dressfi.model.FactoryVO;
-import com.jang.dressfi.model.FollowVO;
-import com.jang.dressfi.model.KnowHowVO;
-import com.jang.dressfi.model.PortFolioVO;
-import com.jang.dressfi.model.SellerVO;
-import com.jang.dressfi.model.UserVO;
-import com.jang.dressfi.model.iReplyVO;
-import com.jang.dressfi.model.khReplyVO;
-import com.jang.dressfi.service.LoginService;
-import com.jang.dressfi.service.ProfileService;
-import com.jang.dressfi.utils.BCrypt;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
 
-	@Autowired //
-	private LoginService loginService; //
-	@Autowired
-	private ProfileService profileService;
-	private String uploadPath = "C:\\Users\\berno\\eclipse-workspace\\Dressfi_MP_v1\\src\\main\\webapp\\resources\\img\\";
-
-	// mypage profile ºÎºÐ
-	@RequestMapping(value = "/myhome.do", method = RequestMethod.GET)
-	public String profile(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
-			HttpSession session) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		PortFolioVO portfolioItem = new PortFolioVO();
-		KnowHowVO knowhowVO = new KnowHowVO();
-		portfolioItem.setI_mdiv(mmno);
-		portfolioItem.setI_mnum(mnum);
-		knowhowVO.setH_mdiv(mmno);
-		knowhowVO.setH_mnum(mnum);
-		ArrayList<PortFolioVO> portfolio = profileService.getPortFolio(portfolioItem);
-		KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
-		ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("portfolio", portfolio);
-			model.addAttribute("size", portfolio.size());
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			model.addAttribute("knowhowSize", knowhowList.size());
-			return "/profile/myhome_design";
-
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolio", portfolio);
-			model.addAttribute("size", portfolio.size());
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			model.addAttribute("knowhowSize", knowhowList.size());
-			return "/profile/myhome_factory";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolio", portfolio);
-			model.addAttribute("size", portfolio.size());
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			model.addAttribute("knowhowSize", knowhowList.size());
-			return "/profile/myhome_seller";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/myhome";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// »ó´ë »ç¿ëÀÚ ½ÃÁ¡ ÇÁ·ÎÇÊ
-	@RequestMapping(value = "/userhome.do", method = RequestMethod.GET)
-	public String userProfile(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
-			HttpSession session, PortFolioVO portfolioVO) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		String userName = (String) session.getAttribute("userName");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		String i_mdiv = portfolioVO.getI_mdiv();
-		int i_mnum = portfolioVO.getI_mnum();
-		mmno = i_mdiv;
-		mno = i_mdiv + i_mnum;
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		PortFolioVO portfolioItem = new PortFolioVO();
-		KnowHowVO knowhowVO = new KnowHowVO();
-		portfolioItem.setI_mdiv(mmno);
-		portfolioItem.setI_mnum(mnum);
-		knowhowVO.setH_mdiv(mmno);
-		knowhowVO.setH_mnum(mnum);
-		ArrayList<PortFolioVO> portfolio = profileService.getPortFolio(portfolioItem);
-		KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
-		ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
-		model.addAttribute("i_mnum", i_mnum);
-		model.addAttribute("i_mdiv", i_mdiv);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(design.getMd_name());
-			FollowVO fl = this.profileService.getfl(followVO);
-			if (fl != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("portfolio", portfolio);
-			model.addAttribute("size", portfolio.size());
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			model.addAttribute("knowhowSize", knowhowList.size());
-			return "/profile/userhome_design";
-
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(factory.getMf_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolio", portfolio);
-			model.addAttribute("size", portfolio.size());
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			model.addAttribute("knowhowSize", knowhowList.size());
-			return "/profile/userhome_factory";
-
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(seller.getMc_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolio", portfolio);
-			model.addAttribute("size", portfolio.size());
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			model.addAttribute("knowhowSize", knowhowList.size());
-			return "/profile/userhome_seller";
-
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/userhome";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// ÆÈ·Î¿ì Å×½ºÆ® ¸ÅÇÎ
-	@RequestMapping(value = "/followerView.do", method = RequestMethod.GET)
-	public String followerView(Model model,HttpSession session,HttpServletRequest request) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		String userName = request.getParameter("userName");
-		UserVO user = loginService.getsUser(userName);
-		
-		List<FollowVO> fl = profileService.getflerlist(userName);
-		model.addAttribute("fllist",fl);
-		model.addAttribute("user", user);
-		return "/profile/followview_follower";
-	}
-
-	@RequestMapping(value = "/followingView.do", method = RequestMethod.GET)
-	public String followingView(Model model, HttpSession session,HttpServletRequest request) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		String userName = request.getParameter("userName");
-		UserVO user = loginService.getsUser(userName);
-		
-		List<FollowVO> fl = profileService.getflinglist(userName);
-		model.addAttribute("user",user);
-		model.addAttribute("fllist",fl);
-		return "/profile/followview_following";
-		
-	}
-
-	// ÇÁ·ÎÇÊ ¼öÁ¤
-	@RequestMapping(value = "/pmodify.do", method = RequestMethod.GET)
-	public String pmodify(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
-			HttpSession session) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/pmodify_design";
-
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/pmodify_factory";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/pmodify_seller";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			System.out.print(mno.toString());
-			System.out.print(user.toString());
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			System.out.print("¿©±â!¸â¹ö");
-			return "/profile/pmodify";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "redirect:/myhome.do";
-		}
-
-	}
-
-	@RequestMapping(value = "/pmodify.do", method = RequestMethod.POST)
-	public String upProfile(UserVO userVO, Model model, RedirectAttributes flush, HttpSession session)
-			throws Exception {
-		if (this.profileService.updateProfile(userVO) != 0) {
-			// model.addAttribute(userId);
-			// sysout //
-			String userId = (String) session.getAttribute("userId");
-			flush.addFlashAttribute("userId", userId);
-			return "redirect:/profile/myhome.do";
-		} else {
-			model.addAttribute("error", "¼öÁ¤¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù");
-			return "/profile/pmodify";
-		}
-	}
-
-	@RequestMapping(value = "/dpmodify.do", method = RequestMethod.POST)
-	public String updProfile(DesignVO designVO, Model model, RedirectAttributes flush, HttpSession session)
-			throws Exception {
-		if (this.profileService.updateMDProfile(designVO) != 0) {
-			// model.addAttribute(userId);
-			// sysout //
-			String userId = (String) session.getAttribute("userId");
-			flush.addFlashAttribute("userId", userId);
-			return "redirect:/profile/myhome.do";
-		} else {
-			model.addAttribute("error", "¼öÁ¤¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù");
-			return "/profile/pmodify";
-		}
-	}
-
-	@RequestMapping(value = "/fpmodify.do", method = RequestMethod.POST)
-	public String upfProfile(FactoryVO factoryVO, Model model, RedirectAttributes flush, HttpSession session)
-			throws Exception {
-		if (this.profileService.updateMFProfile(factoryVO) != 0) {
-			// model.addAttribute(userId);
-			// sysout //
-			String userId = (String) session.getAttribute("userId");
-			flush.addFlashAttribute("userId", userId);
-			return "redirect:/profile/myhome.do";
-		} else {
-			model.addAttribute("error", "¼öÁ¤¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù");
-			return "/profile/pmodify";
-		}
-	}
-
-	@RequestMapping(value = "/cpmodify.do", method = RequestMethod.POST)
-	public String upcProfile(SellerVO sellerVO, Model model, RedirectAttributes flush, HttpSession session)
-			throws Exception {
-		if (this.profileService.updateMCProfile(sellerVO) != 0) {
-			// model.addAttribute(userId);
-			// sysout //
-			String userId = (String) session.getAttribute("userId");
-			flush.addFlashAttribute("userId", userId);
-			return "redirect:/profile/myhome.do";
-		} else {
-			model.addAttribute("error", "¼öÁ¤¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù");
-			return "/profile/pmodify";
-		}
-	}
-
-	// ÆÐ½º¿öµå ¼öÁ¤
-	@RequestMapping(value = "/peditpasswd.do", method = RequestMethod.GET)
-	public String profileeditpasswd(HttpSession session, Model model) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		model.addAttribute("loginUser", loginuser);
-		return "/profile/peditpasswd";
-	}
-
-	// @RequestMapping(value = "/peditpasswd.do", method = RequestMethod.POST)
-	// public String PEditpassSave(UserVO userVO, HttpSession session, Model model)
-	// throws Exception {
-	// String userId = (String) session.getAttribute("userId");
-	// userVO.setUserId(userId);
-	// System.out.println(userVO.getPasswd());
-	// String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
-	// userVO.setPasswd(hashpass);
-	// if(this.profileService.updatePwd(userVO) != 0) {
-	// System.out.println(userVO.toString());
-	// return "redirect:/member/logout.do";
-	// }
-	// else {
-	// return "/profile/peditpasswd";
-	// }
-	// }
-	@RequestMapping(value = "/peditpasswd.do", method = RequestMethod.POST)
-	public String PEditpassSave(UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
-			HttpSession session, Model model) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1); // D,F,S,M
-		if (mmno.equals("M")) {
-			userVO.setUserId(userId);
-			String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
-			userVO.setPasswd(hashpass);
-			if (this.profileService.updatePwd(userVO) != 0) {
-				System.out.println(userVO.toString());
-				return "redirect:/member/logout.do";
-			} else {
-				return "/profile/peditpasswd";
-			}
-		} else if (mmno.equals("D")) {
-			designVO.setMd_userId(userId);
-			String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
-			designVO.setMd_passwd(hashpass);
-			if (this.profileService.updateMDPwd(designVO) != 0) {
-				return "redirect:/member/logout.do";
-			} else {
-				return "/profile/peditpasswd";
-			}
-
-		} else if (mmno.equals("F")) {
-			factoryVO.setMf_userId(userId);
-			String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
-			factoryVO.setMf_passwd(hashpass);
-			if (this.profileService.updateMFPwd(factoryVO) != 0) {
-				return "redirect:/member/logout.do";
-			} else {
-				return "/profile/peditpasswd";
-			}
-		} else if (mmno.equals("S")) {
-			sellerVO.setMc_userId(userId);
-			System.out.println("¿©±â!" + userVO.getPasswd());
-			String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
-			sellerVO.setMc_passwd(hashpass);
-			if (this.profileService.updateMCPwd(sellerVO) != 0) {
-				return "redirect:/member/logout.do";
-			} else {
-				return "/profile/peditpasswd";
-			}
-		} else {
-			return "/profile/peditpasswd";
-		}
-	}
-
-	// Àü¹®°¡°ø°£
-	/*
-	 * @RequestMapping(value = "/pphotoview.do", method = RequestMethod.GET) public
-	 * String profilePhotoView(@RequestParam("userId") String userId, Model model)
-	 * throws Exception { UserVO loginuser = this.loginService.getUser(userId);
-	 * model.addAttribute("loginUser", loginuser); return "/profile/pphotoview"; }
-	 */
-
-	// µðÀÚÀÌ³ÊÈ¸¿ø °ø°£
-	@RequestMapping(value = "/design.do", method = RequestMethod.GET)
-	public String design(Model model, HttpSession session) throws Exception {
-		// model.addAttribute("user", new User());
-		String userId = (String) session.getAttribute("userId");
-		if (userId != null) {
-			UserVO loginuser = this.loginService.getUser(userId);
-			String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-			String mmno = mno.substring(0, 1);
-
-			model.addAttribute("userId", loginuser.getUserId());
-		} else {
-			return "redirect:/member/login.do";
-		}
-		return "/community/design";
-	}
-
-	@RequestMapping(value = "/getDesign.do", method = RequestMethod.POST)
-	public @ResponseBody ArrayList<Map<String, Object>> getDesign(@Valid UserVO userVO, BindingResult bindingResult,
-			HttpSession session, @RequestParam Map<String, Object> item) {
-
-		ArrayList<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-		result = profileService.selectDesign(item);
-		return result;
-	}
-
-	// °øÀåÈ¸¿ø °ø°£
-	@RequestMapping(value = "/factory.do", method = RequestMethod.GET)
-	public String factory(Model model, HttpSession session) throws Exception {
-		// model.addAttribute("user", new User());
-		String userId = (String) session.getAttribute("userId");
-		if (userId != null) {
-			UserVO loginuser = this.loginService.getUser(userId);
-			String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-			String mmno = mno.substring(0, 1);
-
-			model.addAttribute("userId", loginuser.getUserId());
-		} else {
-			return "redirect:/member/login.do";
-		}
-		return "/community/factory";
-	}
-
-	@RequestMapping(value = "/getFactory.do", method = RequestMethod.POST)
-	public @ResponseBody ArrayList<Map<String, Object>> getFactory(@Valid UserVO userVO, BindingResult bindingResult,
-			HttpSession session, @RequestParam Map<String, Object> item) {
-
-		ArrayList<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-		result = profileService.selectFactory(item);
-		return result;
-	}
-
-	// µµ¼Ò¸ÅÈ¸¿ø °ø°£
-	@RequestMapping(value = "/seller.do", method = RequestMethod.GET)
-	public String seller(Model model, HttpSession session) throws Exception {
-		// model.addAttribute("user", new User());
-		String userId = (String) session.getAttribute("userId");
-		if (userId != null) {
-			UserVO loginuser = this.loginService.getUser(userId);
-			String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-			String mmno = mno.substring(0, 1);
-
-			model.addAttribute("userId", loginuser.getUserId());
-		} else {
-			return "redirect:/member/login.do";
-		}
-		return "/community/seller";
-	}
-
-	@RequestMapping(value = "/getSeller.do", method = RequestMethod.POST)
-	public @ResponseBody ArrayList<Map<String, Object>> getSeller(@Valid UserVO userVO, BindingResult bindingResult,
-			HttpSession session, @RequestParam Map<String, Object> item) {
-
-		ArrayList<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-		result = profileService.selectSeller(item);
-		return result;
-	}
-
-	// user portfolio ±Û¾²±â ºÎºÐ
-	@RequestMapping(value = "/portfoliowrite.do", method = RequestMethod.GET)
-	public String portfoliowrite(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
-			HttpSession session) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-
-		model.addAttribute("userId", loginuser.getUserId());
-		return "/profile/portfoliowrite";
-	}
-
-	// user ³ëÇÏ¿ì ±Û¾²±â ºÎºÐ
-	@RequestMapping(value = "/knowhowwrite.do", method = RequestMethod.GET)
-	public String knowhowwrite(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
-			HttpSession session) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-
-		model.addAttribute("userId", loginuser.getUserId());
-		return "/profile/knowhowwrite";
-	}
-
-	// user portfolio ±Û¾²±â ¿Ã¸®±â ºÎºÐ
-	@RequestMapping(value = "/portfoliowrite_insert.do")
-	public String portfoliowrite_insert(Model model, PortFolioVO portfolioVO, HttpSession session) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		portfolioVO.setI_mdiv(mmno);
-		portfolioVO.setI_mnum(mnum);
-		int result = profileService.insertPortFolio(portfolioVO);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// user ³ëÇÏ¿ì ±Û¾²±â ¿Ã¸®±â ºÎºÐ
-	@RequestMapping(value = "/knowhowwrite_insert.do")
-	public String knowhowwrite_insert(Model model, KnowHowVO knowhowVO, HttpSession session) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		knowhowVO.setH_mdiv(mmno);
-		knowhowVO.setH_mnum(mnum);
-		int result = profileService.insertKnowHow(knowhowVO);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "redirect:/profile/myhome.do";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// myportfolio »çÁø ¼¼ºÎº¸±â ºÎºÐ
-	@RequestMapping(value = "/pphotoview.do", method = RequestMethod.GET)
-	public String pphotoview(Model model, PortFolioVO portfolioVO, HttpSession session) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		String userName = (String) session.getAttribute("userName");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		portfolioVO.setI_mdiv(mmno);
-		portfolioVO.setI_mnum(mnum);
-		PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
-		ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/pphotoview";
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/pphotoview";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/pphotoview";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/pphotoview";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// user portfolio »çÁø ¼¼ºÎº¸±â ºÎºÐ
-	@RequestMapping(value = "/userpphotoview.do", method = RequestMethod.GET)
-	public String userpphotoview(Model model, PortFolioVO portfolioVO, HttpSession session) throws Exception {
-
-		String mno = "";
-		String mmno = portfolioVO.getI_mdiv(); // D
-		int mnum = portfolioVO.getI_mnum();
-		mno = mmno + mnum;
-		portfolioVO.setI_mdiv(mmno);
-		portfolioVO.setI_mnum(mnum);
-
-		UserVO user = this.loginService.getssUser(mno);
-
-		PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
-		ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
-		List<iReplyVO> replyList = this.profileService.igetreply(portfolio.getIno());
-		model.addAttribute("mnum", mnum);
-		model.addAttribute("mmno", mmno);
-
-		this.profileService.iviewcnt(portfolio.getIno()); // °Ô½Ã±Û Á¶È¸¼ö Áõ°¡
-
-		model.addAttribute("replyList", replyList);
-		model.addAttribute("user", user);
-		model.addAttribute("portfolioList", portfolioList);
-		model.addAttribute("portfolio", portfolio);
-		return "/profile/userpphotoview";
-	}
-
-	// my portfolio Æ÷Æ®Æú¸®¿À ºÎºÐ
-	@RequestMapping(value = "/myportfoliolist.do", method = RequestMethod.GET)
-	public String userPortfoliolist(Model model, PortFolioVO portfolioVO, HttpSession session, UserVO userVO,
-			DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		portfolioVO.setI_mdiv(mmno);
-		portfolioVO.setI_mnum(mnum);
-		PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
-		ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/myportfoliolist_design";
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/myportfoliolist_factory";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/myportfoliolist_seller";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/myhome";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// my ³ëÇÏ¿ì ºÎºÐ
-	@RequestMapping(value = "/myknowhow.do", method = RequestMethod.GET)
-	public String myKnowhow(Model model, KnowHowVO knowhowVO, HttpSession session, UserVO userVO, DesignVO designVO,
-			FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		knowhowVO.setH_mdiv(mmno);
-		knowhowVO.setH_mnum(mnum);
-		KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
-		ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			return "/profile/myknowhow_design";
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			return "/profile/myknowhow_factory";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			return "/profile/myknowhow_seller";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/myhome";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// user portfolio Æ÷Æ®Æú¸®¿À ºÎºÐ
-	@RequestMapping(value = "/portfoliolist_design.do", method = RequestMethod.GET)
-	public String portfoliolist_design(Model model, PortFolioVO portfolioVO, HttpSession session, UserVO userVO,
-			DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
-		String userId = userVO.getUserId();
-		UserVO loginuser = this.loginService.getUser(userId);
-		String userName = (String) session.getAttribute("userName");
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		portfolioVO.setI_mdiv(mmno);
-		portfolioVO.setI_mnum(mnum);
-		PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
-		ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
-		model.addAttribute("i_mnum", mnum);
-		model.addAttribute("i_mdiv", mmno);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(design.getMd_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/portfoliolist_design";
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(factory.getMf_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			System.out.print(factory.toString() + "\n");
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/portfoliolist_factory";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(seller.getMc_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			System.out.print(seller.toString() + "\n");
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("portfolioList", portfolioList);
-			model.addAttribute("portfolio", portfolio);
-			return "/profile/portfoliolist_seller";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(user.getName());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			System.out.print(user.toString() + "\n");
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/myhome";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// user ³ëÇÏ¿ìºÎºÐ
-	@RequestMapping(value = "/knowhow_design.do", method = RequestMethod.GET)
-	public String knowhow_design(Model model, KnowHowVO knowhowVO, HttpSession session, UserVO userVO,
-			DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
-		String userId = userVO.getUserId();
-		UserVO loginuser = this.loginService.getUser(userId);
-		String userName = (String) session.getAttribute("userName");
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		knowhowVO.setH_mdiv(mmno);
-		knowhowVO.setH_mnum(mnum);
-		KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
-		ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
-		model.addAttribute("i_mnum", mnum);
-		model.addAttribute("i_mdiv", mmno);
-
-		if (mmno.equals("D")) {
-			DesignVO design = this.profileService.getMDProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(design.getMd_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			System.out.print(design.toString() + "\n");
-			if (design.getMd_dept().equals("1")) {
-				design.setMd_dept("ÆÐ¼ÇµðÀÚÀÌ³Ê");
-
-			} else if (design.getMd_dept().equals("2")) {
-				design.setMd_dept("·º½ºÅ¸ÀÏµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â2");
-			} else if (design.getMd_dept().equals("3")) {
-				design.setMd_dept("ÀÇ»óµðÀÚÀÌ³Ê");
-				System.out.print("¿©±â3");
-			} else if (design.getMd_dept().equals("4")) {
-				design.setMd_dept("ÆÐ¼ÇMD");
-				System.out.print("¿©±â4");
-			}
-
-			if (design.getMd_career().equals("1")) {
-				design.setMd_career("5³â¹Ì¸¸");
-
-			} else if (design.getMd_career().equals("2")) {
-				design.setMd_career("5³â~10³â");
-
-			} else if (design.getMd_career().equals("3")) {
-				design.setMd_career("10³â~15³â");
-
-			} else if (design.getMd_career().equals("4")) {
-				design.setMd_career("15³â~20³â");
-
-			} else if (design.getMd_career().equals("5")) {
-				design.setMd_career("20³âÀÌ»ó");
-			}
-
-			if (design.getMd_business().equals("1")) {
-				design.setMd_business("ÇÁ¸®·£¼­");
-			} else if (design.getMd_business().equals("2")) {
-				design.setMd_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("3")) {
-				design.setMd_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (design.getMd_business().equals("4")) {
-				design.setMd_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (design.getMd_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (design.getMd_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (design.getMd_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (design.getMd_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (design.getMd_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (design.getMd_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (design.getMd_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (design.getMd_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (design.getMd_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", design);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			return "/profile/knowhow_design";
-		} else if (mmno.equals("F")) {
-			FactoryVO factory = this.profileService.getMFProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(factory.getMf_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			if (factory.getMf_dept().equals("1")) {
-				factory.setMf_dept("µµ·Î½Ã°øÀå");
-
-			} else if (factory.getMf_dept().equals("2")) {
-				factory.setMf_dept("´ÙÀÌ¸¶·ç°øÀå");
-				System.out.print("¿©±â2");
-			} else if (factory.getMf_dept().equals("3")) {
-				factory.setMf_dept("Á÷±â°øÀå");
-				System.out.print("¿©±â3");
-			} else if (factory.getMf_dept().equals("4")) {
-				factory.setMf_dept("Æ¯¼ö°øÀå");
-				System.out.print("¿©±â4");
-			}
-
-			if (factory.getMf_business().equals("1")) {
-				factory.setMf_business("ÇÁ¸®·£¼­");
-			} else if (factory.getMf_business().equals("2")) {
-				factory.setMf_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("3")) {
-				factory.setMf_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (factory.getMf_business().equals("4")) {
-				factory.setMf_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (factory.getMf_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (factory.getMf_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (factory.getMf_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (factory.getMf_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (factory.getMf_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (factory.getMf_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (factory.getMf_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (factory.getMf_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (factory.getMf_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", factory);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			return "/profile/knowhow_factory";
-		} else if (mmno.equals("S")) {
-			SellerVO seller = this.profileService.getMCProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(seller.getMc_name());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			if (seller.getMc_div().equals("1")) {
-				seller.setMc_div("µµ¸Å");
-
-			} else if (seller.getMc_div().equals("2")) {
-				seller.setMc_div("¼Ò¸Å");
-			}
-
-			if (seller.getMc_business().equals("1")) {
-				seller.setMc_business("ÇÁ¸®·£¼­");
-			} else if (seller.getMc_business().equals("2")) {
-				seller.setMc_business("°³ÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("3")) {
-				seller.setMc_business("¹ýÀÎ»ç¾÷ÀÚ");
-			} else if (seller.getMc_business().equals("4")) {
-				seller.setMc_business("ºê·£µå´ë¸®Á¡");
-			}
-
-			if (seller.getMc_ano1() == 10) {
-				model.addAttribute("ano1", "¼­¿ï");
-			} else if (seller.getMc_ano1() == 20) {
-				model.addAttribute("ano1", "°­¿ø");
-			} else if (seller.getMc_ano1() == 30) {
-				model.addAttribute("ano1", "´ëÀü");
-			}
-
-			if (seller.getMc_ano2() == 10) {
-				model.addAttribute("ano2", "¼­¿ï");
-			} else if (seller.getMc_ano2() == 20) {
-				model.addAttribute("ano2", "°­¿ø");
-			} else if (seller.getMc_ano2() == 30) {
-				model.addAttribute("ano2", "´ëÀü");
-			}
-
-			if (seller.getMc_ano3() == 10) {
-				model.addAttribute("ano3", "¼­¿ï");
-			} else if (seller.getMc_ano3() == 20) {
-				model.addAttribute("ano3", "°­¿ø");
-			} else if (seller.getMc_ano3() == 30) {
-				model.addAttribute("ano3", "´ëÀü");
-			}
-
-			model.addAttribute("profile", seller);
-			model.addAttribute("loginUser", loginuser);
-			model.addAttribute("knowhowList", knowhowList);
-			model.addAttribute("knowhow", knowhow);
-			return "/profile/knowhow_seller";
-		} else if (mmno.equals("M")) {
-			UserVO user = this.profileService.getProfile(mno); // MNOº¯¼ö¿¡ µû¸¥ ÇÁ·ÎÇÊ ¹Þ¾Æ¿À±â
-			FollowVO followVO = new FollowVO();
-			followVO.setFollower(userName);
-			followVO.setFollowing(user.getName());
-			if (this.profileService.getfl(followVO) != null) { // ÀÌ¹Ì ÆÈ·Î¿ì ÇßÀ»°æ¿ì
-				model.addAttribute("folyn", "y");
-			} else {
-				model.addAttribute("folyn", "n");
-			}
-			model.addAttribute("profile", user);
-			model.addAttribute("loginUser", loginuser);
-			return "/profile/myhome";
-		} else {
-			model.addAttribute("error", "Àß¸øµÈ °æ·ÎÀÔ´Ï´Ù");
-			return "index_container";
-		}
-	}
-
-	// user ³ëÇÏ¿ì°Ô½ÃÆÇ ¼¼ºÎÈ­¸é ºÎºÐ
-	@RequestMapping(value = "/knowhowview.do", method = RequestMethod.GET)
-	public String knowhowview(@RequestParam(value = "hno") int hno, Model model, KnowHowVO knowhowVO,
-			HttpSession session, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO)
-			throws Exception {
-		// String userId = (String) session.getAttribute("userId");
-		// UserVO loginuser = this.loginService.getUser(userId);
-		// String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		// String mmno = mno.substring(0, 1);
-		// int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		// knowhowVO.setH_mdiv(mmno);
-		// knowhowVO.setH_mnum(mnum);
-		KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
-		ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhow);
-		List<khReplyVO> replyList = profileService.kgetreply(hno);
-		this.profileService.viewcnt(hno);
-		String h_name = knowhow.getH_name();
-		String username = h_name;
-		System.out.println(username);
-		UserVO user = this.loginService.getsUser(username);
-
-		model.addAttribute("user", user);
-		model.addAttribute("knowhowList", knowhowList);
-		model.addAttribute("replyList", replyList);
-		model.addAttribute("knowhow", knowhow);
-		return "/profile/knowhowview";
-	}
-
-	@RequestMapping(value = "/kwritereply") // ´ñ±ÛÀÛ¼º
-	public String replykWrite(@ModelAttribute("khreply") khReplyVO khreply, RedirectAttributes rea,
-			HttpSession session) {
-		String content = khreply.getRh_text().replaceAll("<", "&lt;");
-		content = khreply.getRh_text().replaceAll(">", "&gt;");
-		content = khreply.getRh_text().replaceAll("&", "&amp;");
-		content = khreply.getRh_text().replaceAll("\"", "&quot;");
-		content = khreply.getRh_text().replaceAll("\r\n", "<br />");
-		khreply.setRh_text(content);
-
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
-		String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		String mmno = mno.substring(0, 1);
-		int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		khreply.setRh_mdiv(mmno);
-		khreply.setRh_mnum(mnum);
-
-		this.profileService.kwritereply(khreply);
-		rea.addAttribute("hno", khreply.getHno());
-		return "redirect:knowhowview.do";
-	}
-
-	@RequestMapping(value = "/likeknow") // ³ëÇÏ¿ì ÁÁ¾Æ¿ä
-	public String likeknow(HttpServletRequest request, RedirectAttributes rea) {
-		System.out.println("¿©±â½ÇÇà");
-		int hno = Integer.parseInt(request.getParameter("hno"));
-		profileService.likecnt(hno);
-		rea.addAttribute("hno", hno);
-		return "redirect:knowhowview.do";
-	}
-
-	@RequestMapping(value = "/likeknowreply") // ³ëÇÏ¿ì ´ñ±Û ÁÁ¾Æ¿ä
-	public String likeknowreply(HttpServletRequest request, RedirectAttributes rea) {
-		int rhno = Integer.parseInt(request.getParameter("rhno"));
-		int hno = Integer.parseInt(request.getParameter("hno"));
-		profileService.likereplycnt(rhno);
-		rea.addAttribute("hno", hno);
-		return "redirect:knowhowview.do";
-	}
-
-	@RequestMapping(value = "/deletereply") // ³ëÇÏ¿ì ´ñ±Û »èÁ¦
-	public String delreply(HttpServletRequest request, RedirectAttributes rea) {
-		int rhno = Integer.parseInt(request.getParameter("rhno"));
-		int hno = Integer.parseInt(request.getParameter("hno"));
-		profileService.deletereply(rhno);
-		rea.addAttribute("hno", hno);
-		return "redirect:knowhowview.do";
-	}
-
-	@RequestMapping(value = "/delknow") // ³ëÇÏ¿ì ±Û »èÁ¦
-	public String delknow(HttpServletRequest request) {
-		int hno = Integer.parseInt(request.getParameter("hno"));
-		profileService.delknow(hno);
-		return "redirect:/board/knowhow.do";
-	}
-
-	@RequestMapping(value = "/delfl") // ÆÈ·Î¿ì »èÁ¦
-	public String delfl(HttpServletRequest request, HttpSession session, RedirectAttributes rea) {
-		String userName = (String) session.getAttribute("userName");
-		String name = request.getParameter("name");
-		String i_mdiv = request.getParameter("i_mdiv");
-		int i_mnum = Integer.parseInt(request.getParameter("i_mnum"));
-		FollowVO followVO = new FollowVO();
-		followVO.setFollower(userName);
-		followVO.setFollowing(name);
-		this.profileService.delfl(followVO);
-		rea.addAttribute("i_mnum", i_mnum);
-		rea.addAttribute("i_mdiv", i_mdiv);
-		return "redirect:userhome.do";
-	}
-
-	@RequestMapping(value = "/incfl") // ÆÈ·Î¿ì Ãß°¡
-	public String incfl(HttpServletRequest request, HttpSession session, RedirectAttributes rea) {
-		String userName = (String) session.getAttribute("userName"); // ÆÈ·Î¿ì ÇÏ´Â»ç¶÷
-		String name = request.getParameter("name"); // ÆÈ·Î¿ì ´çÇÏ´Â»ç¶÷
-		UserVO fw = loginService.getsUser(userName);
-		UserVO fl = loginService.getsUser(name);
-		
-		FollowVO followVO = new FollowVO();
-		followVO.setFollower(userName);
-		followVO.setFollowing(name);
-		followVO.setFwimg(fw.getProimg());
-		followVO.setFlimg(fl.getProimg());
-		String i_mdiv = request.getParameter("i_mdiv");
+    @Autowired //
+    private LoginService loginService; //
+    @Autowired
+    private ProfileService profileService;
+    private String uploadPath = "C:\\Users\\berno\\eclipse-workspace\\Dressfi_MP_v1\\src\\main\\webapp\\resources\\img\\";
+
+    // mypage profile ï¿½Îºï¿½
+    @RequestMapping(value = "/myhome.do", method = RequestMethod.GET)
+    public String profile(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
+                          HttpSession session) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        PortFolioVO portfolioItem = new PortFolioVO();
+        KnowHowVO knowhowVO = new KnowHowVO();
+        portfolioItem.setI_mdiv(mmno);
+        portfolioItem.setI_mnum(mnum);
+        knowhowVO.setH_mdiv(mmno);
+        knowhowVO.setH_mnum(mnum);
+        ArrayList<PortFolioVO> portfolio = profileService.getPortFolio(portfolioItem);
+        KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
+        ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("portfolio", portfolio);
+            model.addAttribute("size", portfolio.size());
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            model.addAttribute("knowhowSize", knowhowList.size());
+            return "/profile/myhome_design";
+
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolio", portfolio);
+            model.addAttribute("size", portfolio.size());
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            model.addAttribute("knowhowSize", knowhowList.size());
+            return "/profile/myhome_factory";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolio", portfolio);
+            model.addAttribute("size", portfolio.size());
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            model.addAttribute("knowhowSize", knowhowList.size());
+            return "/profile/myhome_seller";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/myhome";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    @RequestMapping(value = "/userhome.do", method = RequestMethod.GET)
+    public String userProfile(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
+                              HttpSession session, PortFolioVO portfolioVO) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        String userName = (String) session.getAttribute("userName");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        String i_mdiv = portfolioVO.getI_mdiv();
+        int i_mnum = portfolioVO.getI_mnum();
+        mmno = i_mdiv;
+        mno = i_mdiv + i_mnum;
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        PortFolioVO portfolioItem = new PortFolioVO();
+        KnowHowVO knowhowVO = new KnowHowVO();
+        portfolioItem.setI_mdiv(mmno);
+        portfolioItem.setI_mnum(mnum);
+        knowhowVO.setH_mdiv(mmno);
+        knowhowVO.setH_mnum(mnum);
+        ArrayList<PortFolioVO> portfolio = profileService.getPortFolio(portfolioItem);
+        KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
+        ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
+        model.addAttribute("i_mnum", i_mnum);
+        model.addAttribute("i_mdiv", i_mdiv);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(design.getMd_name());
+            FollowVO fl = this.profileService.getfl(followVO);
+            if (fl != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("portfolio", portfolio);
+            model.addAttribute("size", portfolio.size());
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            model.addAttribute("knowhowSize", knowhowList.size());
+            return "/profile/userhome_design";
+
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(factory.getMf_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolio", portfolio);
+            model.addAttribute("size", portfolio.size());
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            model.addAttribute("knowhowSize", knowhowList.size());
+            return "/profile/userhome_factory";
+
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(seller.getMc_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolio", portfolio);
+            model.addAttribute("size", portfolio.size());
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            model.addAttribute("knowhowSize", knowhowList.size());
+            return "/profile/userhome_seller";
+
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/userhome";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // ï¿½È·Î¿ï¿½ ï¿½×½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+    @RequestMapping(value = "/followerView.do", method = RequestMethod.GET)
+    public String followerView(Model model, HttpSession session, HttpServletRequest request) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        String userName = request.getParameter("userName");
+        UserVO user = loginService.getsUser(userName);
+
+        List<FollowVO> fl = profileService.getflerlist(userName);
+        model.addAttribute("fllist", fl);
+        model.addAttribute("user", user);
+        return "/profile/followview_follower";
+    }
+
+    @RequestMapping(value = "/followingView.do", method = RequestMethod.GET)
+    public String followingView(Model model, HttpSession session, HttpServletRequest request) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        String userName = request.getParameter("userName");
+        UserVO user = loginService.getsUser(userName);
+
+        List<FollowVO> fl = profileService.getflinglist(userName);
+        model.addAttribute("user", user);
+        model.addAttribute("fllist", fl);
+        return "/profile/followview_following";
+
+    }
+
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    @RequestMapping(value = "/pmodify.do", method = RequestMethod.GET)
+    public String pmodify(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
+                          HttpSession session) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/pmodify_design";
+
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/pmodify_factory";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/pmodify_seller";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            System.out.print(mno.toString());
+            System.out.print(user.toString());
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            System.out.print("ï¿½ï¿½ï¿½ï¿½!ï¿½ï¿½ï¿½");
+            return "/profile/pmodify";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "redirect:/myhome.do";
+        }
+
+    }
+
+    @RequestMapping(value = "/pmodify.do", method = RequestMethod.POST)
+    public String upProfile(UserVO userVO, Model model, RedirectAttributes flush, HttpSession session)
+            throws Exception {
+        if (this.profileService.updateProfile(userVO) != 0) {
+            // model.addAttribute(userId);
+            // sysout //
+            String userId = (String) session.getAttribute("userId");
+            flush.addFlashAttribute("userId", userId);
+            return "redirect:/profile/myhome.do";
+        } else {
+            model.addAttribute("error", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
+            return "/profile/pmodify";
+        }
+    }
+
+    @RequestMapping(value = "/dpmodify.do", method = RequestMethod.POST)
+    public String updProfile(DesignVO designVO, Model model, RedirectAttributes flush, HttpSession session)
+            throws Exception {
+        if (this.profileService.updateMDProfile(designVO) != 0) {
+            // model.addAttribute(userId);
+            // sysout //
+            String userId = (String) session.getAttribute("userId");
+            flush.addFlashAttribute("userId", userId);
+            return "redirect:/profile/myhome.do";
+        } else {
+            model.addAttribute("error", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
+            return "/profile/pmodify";
+        }
+    }
+
+    @RequestMapping(value = "/fpmodify.do", method = RequestMethod.POST)
+    public String upfProfile(FactoryVO factoryVO, Model model, RedirectAttributes flush, HttpSession session)
+            throws Exception {
+        if (this.profileService.updateMFProfile(factoryVO) != 0) {
+            // model.addAttribute(userId);
+            // sysout //
+            String userId = (String) session.getAttribute("userId");
+            flush.addFlashAttribute("userId", userId);
+            return "redirect:/profile/myhome.do";
+        } else {
+            model.addAttribute("error", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
+            return "/profile/pmodify";
+        }
+    }
+
+    @RequestMapping(value = "/cpmodify.do", method = RequestMethod.POST)
+    public String upcProfile(SellerVO sellerVO, Model model, RedirectAttributes flush, HttpSession session)
+            throws Exception {
+        if (this.profileService.updateMCProfile(sellerVO) != 0) {
+            // model.addAttribute(userId);
+            // sysout //
+            String userId = (String) session.getAttribute("userId");
+            flush.addFlashAttribute("userId", userId);
+            return "redirect:/profile/myhome.do";
+        } else {
+            model.addAttribute("error", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
+            return "/profile/pmodify";
+        }
+    }
+
+    // ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    @RequestMapping(value = "/peditpasswd.do", method = RequestMethod.GET)
+    public String profileeditpasswd(HttpSession session, Model model) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        model.addAttribute("loginUser", loginuser);
+        return "/profile/peditpasswd";
+    }
+
+    // @RequestMapping(value = "/peditpasswd.do", method = RequestMethod.POST)
+    // public String PEditpassSave(UserVO userVO, HttpSession session, Model model)
+    // throws Exception {
+    // String userId = (String) session.getAttribute("userId");
+    // userVO.setUserId(userId);
+    // System.out.println(userVO.getPasswd());
+    // String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
+    // userVO.setPasswd(hashpass);
+    // if(this.profileService.updatePwd(userVO) != 0) {
+    // System.out.println(userVO.toString());
+    // return "redirect:/member/logout.do";
+    // }
+    // else {
+    // return "/profile/peditpasswd";
+    // }
+    // }
+    @RequestMapping(value = "/peditpasswd.do", method = RequestMethod.POST)
+    public String PEditpassSave(UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
+                                HttpSession session, Model model) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1); // D,F,S,M
+        if (mmno.equals("M")) {
+            userVO.setUserId(userId);
+            String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
+            userVO.setPasswd(hashpass);
+            if (this.profileService.updatePwd(userVO) != 0) {
+                System.out.println(userVO.toString());
+                return "redirect:/member/logout.do";
+            } else {
+                return "/profile/peditpasswd";
+            }
+        } else if (mmno.equals("D")) {
+            designVO.setMd_userId(userId);
+            String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
+            designVO.setMd_passwd(hashpass);
+            if (this.profileService.updateMDPwd(designVO) != 0) {
+                return "redirect:/member/logout.do";
+            } else {
+                return "/profile/peditpasswd";
+            }
+
+        } else if (mmno.equals("F")) {
+            factoryVO.setMf_userId(userId);
+            String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
+            factoryVO.setMf_passwd(hashpass);
+            if (this.profileService.updateMFPwd(factoryVO) != 0) {
+                return "redirect:/member/logout.do";
+            } else {
+                return "/profile/peditpasswd";
+            }
+        } else if (mmno.equals("S")) {
+            sellerVO.setMc_userId(userId);
+            System.out.println("ï¿½ï¿½ï¿½ï¿½!" + userVO.getPasswd());
+            String hashpass = BCrypt.hashpw(userVO.getPasswd(), BCrypt.gensalt(12));
+            sellerVO.setMc_passwd(hashpass);
+            if (this.profileService.updateMCPwd(sellerVO) != 0) {
+                return "redirect:/member/logout.do";
+            } else {
+                return "/profile/peditpasswd";
+            }
+        } else {
+            return "/profile/peditpasswd";
+        }
+    }
+
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    /*
+     * @RequestMapping(value = "/pphotoview.do", method = RequestMethod.GET) public
+     * String profilePhotoView(@RequestParam("userId") String userId, Model model)
+     * throws Exception { UserVO loginuser = this.loginService.getUser(userId);
+     * model.addAttribute("loginUser", loginuser); return "/profile/pphotoview"; }
+     */
+
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    @RequestMapping(value = "/design.do", method = RequestMethod.GET)
+    public String design(Model model, HttpSession session) throws Exception {
+        // model.addAttribute("user", new User());
+        String userId = (String) session.getAttribute("userId");
+        if (userId != null) {
+            UserVO loginuser = this.loginService.getUser(userId);
+            String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+            String mmno = mno.substring(0, 1);
+
+            model.addAttribute("userId", loginuser.getUserId());
+        } else {
+            return "redirect:/member/login.do";
+        }
+        return "/community/design";
+    }
+
+    @RequestMapping(value = "/getDesign.do", method = RequestMethod.POST)
+    public @ResponseBody ArrayList<Map<String, Object>> getDesign(@Valid UserVO userVO, BindingResult bindingResult,
+                                                                  HttpSession session, @RequestParam Map<String, Object> item) {
+
+        ArrayList<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        result = profileService.selectDesign(item);
+        return result;
+    }
+
+    // ï¿½ï¿½ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    @RequestMapping(value = "/factory.do", method = RequestMethod.GET)
+    public String factory(Model model, HttpSession session) throws Exception {
+        // model.addAttribute("user", new User());
+        String userId = (String) session.getAttribute("userId");
+        if (userId != null) {
+            UserVO loginuser = this.loginService.getUser(userId);
+            String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+            String mmno = mno.substring(0, 1);
+
+            model.addAttribute("userId", loginuser.getUserId());
+        } else {
+            return "redirect:/member/login.do";
+        }
+        return "/community/factory";
+    }
+
+    @RequestMapping(value = "/getFactory.do", method = RequestMethod.POST)
+    public @ResponseBody ArrayList<Map<String, Object>> getFactory(@Valid UserVO userVO, BindingResult bindingResult,
+                                                                   HttpSession session, @RequestParam Map<String, Object> item) {
+
+        ArrayList<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        result = profileService.selectFactory(item);
+        return result;
+    }
+
+    // ï¿½ï¿½ï¿½Ò¸ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    @RequestMapping(value = "/seller.do", method = RequestMethod.GET)
+    public String seller(Model model, HttpSession session) throws Exception {
+        // model.addAttribute("user", new User());
+        String userId = (String) session.getAttribute("userId");
+        if (userId != null) {
+            UserVO loginuser = this.loginService.getUser(userId);
+            String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+            String mmno = mno.substring(0, 1);
+
+            model.addAttribute("userId", loginuser.getUserId());
+        } else {
+            return "redirect:/member/login.do";
+        }
+        return "/community/seller";
+    }
+
+    @RequestMapping(value = "/getSeller.do", method = RequestMethod.POST)
+    public @ResponseBody ArrayList<Map<String, Object>> getSeller(@Valid UserVO userVO, BindingResult bindingResult,
+                                                                  HttpSession session, @RequestParam Map<String, Object> item) {
+
+        ArrayList<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        result = profileService.selectSeller(item);
+        return result;
+    }
+
+    // user portfolio ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/portfoliowrite.do", method = RequestMethod.GET)
+    public String portfoliowrite(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
+                                 HttpSession session) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+
+        model.addAttribute("userId", loginuser.getUserId());
+        return "/profile/portfoliowrite";
+    }
+
+    // user ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/knowhowwrite.do", method = RequestMethod.GET)
+    public String knowhowwrite(Model model, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO,
+                               HttpSession session) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+
+        model.addAttribute("userId", loginuser.getUserId());
+        return "/profile/knowhowwrite";
+    }
+
+    // user portfolio ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/portfoliowrite_insert.do")
+    public String portfoliowrite_insert(Model model, PortFolioVO portfolioVO, HttpSession session) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        portfolioVO.setI_mdiv(mmno);
+        portfolioVO.setI_mnum(mnum);
+        int result = profileService.insertPortFolio(portfolioVO);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // user ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/knowhowwrite_insert.do")
+    public String knowhowwrite_insert(Model model, KnowHowVO knowhowVO, HttpSession session) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        knowhowVO.setH_mdiv(mmno);
+        knowhowVO.setH_mnum(mnum);
+        int result = profileService.insertKnowHow(knowhowVO);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "redirect:/profile/myhome.do";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // myportfolio ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/pphotoview.do", method = RequestMethod.GET)
+    public String pphotoview(Model model, PortFolioVO portfolioVO, HttpSession session) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        String userName = (String) session.getAttribute("userName");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        portfolioVO.setI_mdiv(mmno);
+        portfolioVO.setI_mnum(mnum);
+        PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
+        ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/pphotoview";
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/pphotoview";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/pphotoview";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/pphotoview";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // user portfolio ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/userpphotoview.do", method = RequestMethod.GET)
+    public String userpphotoview(Model model, PortFolioVO portfolioVO, HttpSession session) throws Exception {
+
+        String mno = "";
+        String mmno = portfolioVO.getI_mdiv(); // D
+        int mnum = portfolioVO.getI_mnum();
+        mno = mmno + mnum;
+        portfolioVO.setI_mdiv(mmno);
+        portfolioVO.setI_mnum(mnum);
+
+        UserVO user = this.loginService.getssUser(mno);
+
+        PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
+        ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
+        List<iReplyVO> replyList = this.profileService.igetreply(portfolio.getIno());
+        model.addAttribute("mnum", mnum);
+        model.addAttribute("mmno", mmno);
+
+        this.profileService.iviewcnt(portfolio.getIno()); // ï¿½Ô½Ã±ï¿½ ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+        model.addAttribute("replyList", replyList);
+        model.addAttribute("user", user);
+        model.addAttribute("portfolioList", portfolioList);
+        model.addAttribute("portfolio", portfolio);
+        return "/profile/userpphotoview";
+    }
+
+    // my portfolio ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/myportfoliolist.do", method = RequestMethod.GET)
+    public String userPortfoliolist(Model model, PortFolioVO portfolioVO, HttpSession session, UserVO userVO,
+                                    DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        portfolioVO.setI_mdiv(mmno);
+        portfolioVO.setI_mnum(mnum);
+        PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
+        ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/myportfoliolist_design";
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/myportfoliolist_factory";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/myportfoliolist_seller";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/myhome";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // my ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/myknowhow.do", method = RequestMethod.GET)
+    public String myKnowhow(Model model, KnowHowVO knowhowVO, HttpSession session, UserVO userVO, DesignVO designVO,
+                            FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        knowhowVO.setH_mdiv(mmno);
+        knowhowVO.setH_mnum(mnum);
+        KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
+        ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            return "/profile/myknowhow_design";
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            return "/profile/myknowhow_factory";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            return "/profile/myknowhow_seller";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/myhome";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // user portfolio ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/portfoliolist_design.do", method = RequestMethod.GET)
+    public String portfoliolist_design(Model model, PortFolioVO portfolioVO, HttpSession session, UserVO userVO,
+                                       DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
+        String userId = userVO.getUserId();
+        UserVO loginuser = this.loginService.getUser(userId);
+        String userName = (String) session.getAttribute("userName");
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        portfolioVO.setI_mdiv(mmno);
+        portfolioVO.setI_mnum(mnum);
+        PortFolioVO portfolio = profileService.getPortFolioDeteil(portfolioVO);
+        ArrayList<PortFolioVO> portfolioList = profileService.getPortFolio(portfolioVO);
+        model.addAttribute("i_mnum", mnum);
+        model.addAttribute("i_mdiv", mmno);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(design.getMd_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/portfoliolist_design";
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(factory.getMf_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            System.out.print(factory.toString() + "\n");
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/portfoliolist_factory";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(seller.getMc_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            System.out.print(seller.toString() + "\n");
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("portfolioList", portfolioList);
+            model.addAttribute("portfolio", portfolio);
+            return "/profile/portfoliolist_seller";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(user.getName());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            System.out.print(user.toString() + "\n");
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/myhome";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // user ï¿½ï¿½ï¿½Ï¿ï¿½Îºï¿½
+    @RequestMapping(value = "/knowhow_design.do", method = RequestMethod.GET)
+    public String knowhow_design(Model model, KnowHowVO knowhowVO, HttpSession session, UserVO userVO,
+                                 DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO) throws Exception {
+        String userId = userVO.getUserId();
+        UserVO loginuser = this.loginService.getUser(userId);
+        String userName = (String) session.getAttribute("userName");
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        knowhowVO.setH_mdiv(mmno);
+        knowhowVO.setH_mnum(mnum);
+        KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
+        ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhowVO);
+        model.addAttribute("i_mnum", mnum);
+        model.addAttribute("i_mdiv", mmno);
+
+        if (mmno.equals("D")) {
+            DesignVO design = this.profileService.getMDProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(design.getMd_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            System.out.print(design.toString() + "\n");
+            if (design.getMd_dept().equals("1")) {
+                design.setMd_dept("ï¿½Ð¼Çµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+
+            } else if (design.getMd_dept().equals("2")) {
+                design.setMd_dept("ï¿½ï¿½ï¿½ï¿½Å¸ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (design.getMd_dept().equals("3")) {
+                design.setMd_dept("ï¿½Ç»ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (design.getMd_dept().equals("4")) {
+                design.setMd_dept("ï¿½Ð¼ï¿½MD");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (design.getMd_career().equals("1")) {
+                design.setMd_career("5ï¿½ï¿½Ì¸ï¿½");
+
+            } else if (design.getMd_career().equals("2")) {
+                design.setMd_career("5ï¿½ï¿½~10ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("3")) {
+                design.setMd_career("10ï¿½ï¿½~15ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("4")) {
+                design.setMd_career("15ï¿½ï¿½~20ï¿½ï¿½");
+
+            } else if (design.getMd_career().equals("5")) {
+                design.setMd_career("20ï¿½ï¿½ï¿½Ì»ï¿½");
+            }
+
+            if (design.getMd_business().equals("1")) {
+                design.setMd_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("2")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("3")) {
+                design.setMd_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_business().equals("4")) {
+                design.setMd_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (design.getMd_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (design.getMd_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", design);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            return "/profile/knowhow_design";
+        } else if (mmno.equals("F")) {
+            FactoryVO factory = this.profileService.getMFProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(factory.getMf_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            if (factory.getMf_dept().equals("1")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Î½Ã°ï¿½ï¿½ï¿½");
+
+            } else if (factory.getMf_dept().equals("2")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½2");
+            } else if (factory.getMf_dept().equals("3")) {
+                factory.setMf_dept("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½3");
+            } else if (factory.getMf_dept().equals("4")) {
+                factory.setMf_dept("Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                System.out.print("ï¿½ï¿½ï¿½ï¿½4");
+            }
+
+            if (factory.getMf_business().equals("1")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("2")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("3")) {
+                factory.setMf_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_business().equals("4")) {
+                factory.setMf_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (factory.getMf_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (factory.getMf_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", factory);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            return "/profile/knowhow_factory";
+        } else if (mmno.equals("S")) {
+            SellerVO seller = this.profileService.getMCProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(seller.getMc_name());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            if (seller.getMc_div().equals("1")) {
+                seller.setMc_div("ï¿½ï¿½ï¿½ï¿½");
+
+            } else if (seller.getMc_div().equals("2")) {
+                seller.setMc_div("ï¿½Ò¸ï¿½");
+            }
+
+            if (seller.getMc_business().equals("1")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("2")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("3")) {
+                seller.setMc_business("ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_business().equals("4")) {
+                seller.setMc_business("ï¿½ê·£ï¿½ï¿½ë¸®ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano1() == 10) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 20) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano1() == 30) {
+                model.addAttribute("ano1", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano2() == 10) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 20) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano2() == 30) {
+                model.addAttribute("ano2", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            if (seller.getMc_ano3() == 10) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 20) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            } else if (seller.getMc_ano3() == 30) {
+                model.addAttribute("ano3", "ï¿½ï¿½ï¿½ï¿½");
+            }
+
+            model.addAttribute("profile", seller);
+            model.addAttribute("loginUser", loginuser);
+            model.addAttribute("knowhowList", knowhowList);
+            model.addAttribute("knowhow", knowhow);
+            return "/profile/knowhow_seller";
+        } else if (mmno.equals("M")) {
+            UserVO user = this.profileService.getProfile(mno); // MNOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½
+            FollowVO followVO = new FollowVO();
+            followVO.setFollower(userName);
+            followVO.setFollowing(user.getName());
+            if (this.profileService.getfl(followVO) != null) { // ï¿½Ì¹ï¿½ ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                model.addAttribute("folyn", "y");
+            } else {
+                model.addAttribute("folyn", "n");
+            }
+            model.addAttribute("profile", user);
+            model.addAttribute("loginUser", loginuser);
+            return "/profile/myhome";
+        } else {
+            model.addAttribute("error", "ï¿½ß¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½");
+            return "index_container";
+        }
+    }
+
+    // user ï¿½ï¿½ï¿½Ï¿ï¿½Ô½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ ï¿½Îºï¿½
+    @RequestMapping(value = "/knowhowview.do", method = RequestMethod.GET)
+    public String knowhowview(@RequestParam(value = "hno") int hno, Model model, KnowHowVO knowhowVO,
+                              HttpSession session, UserVO userVO, DesignVO designVO, FactoryVO factoryVO, SellerVO sellerVO)
+            throws Exception {
+        // String userId = (String) session.getAttribute("userId");
+        // UserVO loginuser = this.loginService.getUser(userId);
+        // String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        // String mmno = mno.substring(0, 1);
+        // int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        // knowhowVO.setH_mdiv(mmno);
+        // knowhowVO.setH_mnum(mnum);
+        KnowHowVO knowhow = profileService.getKnowHowDeteil(knowhowVO);
+        ArrayList<KnowHowVO> knowhowList = profileService.getKnowHow(knowhow);
+        List<khReplyVO> replyList = profileService.kgetreply(hno);
+        this.profileService.viewcnt(hno);
+        String h_name = knowhow.getH_name();
+        String username = h_name;
+        System.out.println(username);
+        UserVO user = this.loginService.getsUser(username);
+
+        model.addAttribute("user", user);
+        model.addAttribute("knowhowList", knowhowList);
+        model.addAttribute("replyList", replyList);
+        model.addAttribute("knowhow", knowhow);
+        return "/profile/knowhowview";
+    }
+
+    @RequestMapping(value = "/kwritereply") // ï¿½ï¿½ï¿½ï¿½Û¼ï¿½
+    public String replykWrite(@ModelAttribute("khreply") khReplyVO khreply, RedirectAttributes rea,
+                              HttpSession session) {
+        String content = khreply.getRh_text().replaceAll("<", "&lt;");
+        content = khreply.getRh_text().replaceAll(">", "&gt;");
+        content = khreply.getRh_text().replaceAll("&", "&amp;");
+        content = khreply.getRh_text().replaceAll("\"", "&quot;");
+        content = khreply.getRh_text().replaceAll("\r\n", "<br />");
+        khreply.setRh_text(content);
+
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
+        String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        String mmno = mno.substring(0, 1);
+        int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        khreply.setRh_mdiv(mmno);
+        khreply.setRh_mnum(mnum);
+
+        this.profileService.kwritereply(khreply);
+        rea.addAttribute("hno", khreply.getHno());
+        return "redirect:knowhowview.do";
+    }
+
+    @RequestMapping(value = "/likeknow") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½
+    public String likeknow(HttpServletRequest request, RedirectAttributes rea) {
+        System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        int hno = Integer.parseInt(request.getParameter("hno"));
+        profileService.likecnt(hno);
+        rea.addAttribute("hno", hno);
+        return "redirect:knowhowview.do";
+    }
+
+    @RequestMapping(value = "/likeknowreply") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½
+    public String likeknowreply(HttpServletRequest request, RedirectAttributes rea) {
+        int rhno = Integer.parseInt(request.getParameter("rhno"));
+        int hno = Integer.parseInt(request.getParameter("hno"));
+        profileService.likereplycnt(rhno);
+        rea.addAttribute("hno", hno);
+        return "redirect:knowhowview.do";
+    }
+
+    @RequestMapping(value = "/deletereply") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public String delreply(HttpServletRequest request, RedirectAttributes rea) {
+        int rhno = Integer.parseInt(request.getParameter("rhno"));
+        int hno = Integer.parseInt(request.getParameter("hno"));
+        profileService.deletereply(rhno);
+        rea.addAttribute("hno", hno);
+        return "redirect:knowhowview.do";
+    }
+
+    @RequestMapping(value = "/delknow") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public String delknow(HttpServletRequest request) {
+        int hno = Integer.parseInt(request.getParameter("hno"));
+        profileService.delknow(hno);
+        return "redirect:/board/knowhow.do";
+    }
+
+    @RequestMapping(value = "/delfl") // ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public String delfl(HttpServletRequest request, HttpSession session, RedirectAttributes rea) {
+        String userName = (String) session.getAttribute("userName");
+        String name = request.getParameter("name");
+        String i_mdiv = request.getParameter("i_mdiv");
+        int i_mnum = Integer.parseInt(request.getParameter("i_mnum"));
+        FollowVO followVO = new FollowVO();
+        followVO.setFollower(userName);
+        followVO.setFollowing(name);
+        this.profileService.delfl(followVO);
+        rea.addAttribute("i_mnum", i_mnum);
+        rea.addAttribute("i_mdiv", i_mdiv);
+        return "redirect:userhome.do";
+    }
+
+    @RequestMapping(value = "/incfl") // ï¿½È·Î¿ï¿½ ï¿½ß°ï¿½
+    public String incfl(HttpServletRequest request, HttpSession session, RedirectAttributes rea) {
+        String userName = (String) session.getAttribute("userName"); // ï¿½È·Î¿ï¿½ ï¿½Ï´Â»ï¿½ï¿½
+        String name = request.getParameter("name"); // ï¿½È·Î¿ï¿½ ï¿½ï¿½ï¿½Ï´Â»ï¿½ï¿½
+        UserVO fw = loginService.getsUser(userName);
+        UserVO fl = loginService.getsUser(name);
+
+        FollowVO followVO = new FollowVO();
+        followVO.setFollower(userName);
+        followVO.setFollowing(name);
+        followVO.setFwimg(fw.getProimg());
+        followVO.setFlimg(fl.getProimg());
+        String i_mdiv = request.getParameter("i_mdiv");
 //		String i_mdiv = request.getParameter("i_mdiv");
-		int i_mnum = Integer.parseInt(request.getParameter("i_mnum"));
-		this.profileService.incfl(followVO);
-		rea.addAttribute("i_mnum", i_mnum);
-		rea.addAttribute("i_mdiv", i_mdiv);
-		return "redirect:userhome.do";
-	}
+        int i_mnum = Integer.parseInt(request.getParameter("i_mnum"));
+        this.profileService.incfl(followVO);
+        rea.addAttribute("i_mnum", i_mnum);
+        rea.addAttribute("i_mdiv", i_mdiv);
+        return "redirect:userhome.do";
+    }
 
-	@RequestMapping(value = "/iwritereply") // ´ñ±ÛÀÛ¼º
-	public String ireplykWrite(@ModelAttribute("ireply") iReplyVO ireply, RedirectAttributes rea, HttpSession session,
-			HttpServletRequest request) {
-		String content = ireply.getRi_text().replaceAll("<", "&lt;");
-		content = ireply.getRi_text().replaceAll(">", "&gt;");
-		content = ireply.getRi_text().replaceAll("&", "&amp;");
-		content = ireply.getRi_text().replaceAll("\"", "&quot;");
-		content = ireply.getRi_text().replaceAll("\r\n", "<br />");
-		ireply.setRi_text(content);
+    @RequestMapping(value = "/iwritereply") // ï¿½ï¿½ï¿½ï¿½Û¼ï¿½
+    public String ireplykWrite(@ModelAttribute("ireply") iReplyVO ireply, RedirectAttributes rea, HttpSession session,
+                               HttpServletRequest request) {
+        String content = ireply.getRi_text().replaceAll("<", "&lt;");
+        content = ireply.getRi_text().replaceAll(">", "&gt;");
+        content = ireply.getRi_text().replaceAll("&", "&amp;");
+        content = ireply.getRi_text().replaceAll("\"", "&quot;");
+        content = ireply.getRi_text().replaceAll("\r\n", "<br />");
+        ireply.setRi_text(content);
 
-		String userId = (String) session.getAttribute("userId");
-		UserVO loginuser = this.loginService.getUser(userId);
+        String userId = (String) session.getAttribute("userId");
+        UserVO loginuser = this.loginService.getUser(userId);
 
-		String i_mnum = request.getParameter("i_mnum");
-		String i_mdiv = request.getParameter("i_mdiv");
+        String i_mnum = request.getParameter("i_mnum");
+        String i_mdiv = request.getParameter("i_mdiv");
 
-		// String mno = loginuser.getMno(); // ºä Å×ÀÌºí mno º¯¼ö ¹Þ±â
-		// String mmno = mno.substring(0, 1);
-		// int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
-		// ireply.setRh_mdiv(mmno);
-		// ireply.setRh_mnum(mnum);
-		this.profileService.iwritereply(ireply);
-		rea.addAttribute("ino", ireply.getIno());
-		rea.addAttribute("i_mnum", i_mnum);
-		rea.addAttribute("i_mdiv", i_mdiv);
-		return "redirect:userpphotoview.do";
-	}
+        // String mno = loginuser.getMno(); // ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ mno ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½
+        // String mmno = mno.substring(0, 1);
+        // int mnum = Integer.parseInt(mno.substring(1).replaceAll(" ", ""));
+        // ireply.setRh_mdiv(mmno);
+        // ireply.setRh_mnum(mnum);
+        this.profileService.iwritereply(ireply);
+        rea.addAttribute("ino", ireply.getIno());
+        rea.addAttribute("i_mnum", i_mnum);
+        rea.addAttribute("i_mdiv", i_mdiv);
+        return "redirect:userpphotoview.do";
+    }
 
-	@RequestMapping(value = "/ilikeknow") // ³ëÇÏ¿ì ÁÁ¾Æ¿ä
-	public String ilikeknow(HttpServletRequest request, RedirectAttributes rea) {
-		System.out.println("¿©±â½ÇÇà");
-		int ino = Integer.parseInt(request.getParameter("ino"));
-		profileService.ilikecnt(ino);
-		String i_mnum = request.getParameter("i_mnum");
-		String i_mdiv = request.getParameter("i_mdiv");
-		rea.addAttribute("ino", ino);
-		rea.addAttribute("i_mnum", i_mnum);
-		rea.addAttribute("i_mdiv", i_mdiv);
-		return "redirect:userpphotoview.do";
-	}
+    @RequestMapping(value = "/ilikeknow") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½
+    public String ilikeknow(HttpServletRequest request, RedirectAttributes rea) {
+        System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        int ino = Integer.parseInt(request.getParameter("ino"));
+        profileService.ilikecnt(ino);
+        String i_mnum = request.getParameter("i_mnum");
+        String i_mdiv = request.getParameter("i_mdiv");
+        rea.addAttribute("ino", ino);
+        rea.addAttribute("i_mnum", i_mnum);
+        rea.addAttribute("i_mdiv", i_mdiv);
+        return "redirect:userpphotoview.do";
+    }
 
-	@RequestMapping(value = "/ilikeknowreply") // ³ëÇÏ¿ì ´ñ±Û ÁÁ¾Æ¿ä
-	public String ilikeknowreply(HttpServletRequest request, RedirectAttributes rea) {
-		int rino = Integer.parseInt(request.getParameter("rino"));
-		int ino = Integer.parseInt(request.getParameter("ino"));
-		profileService.ilikereplycnt(rino);
-		String i_mnum = request.getParameter("i_mnum");
-		String i_mdiv = request.getParameter("i_mdiv");
-		rea.addAttribute("ino", ino);
-		rea.addAttribute("i_mnum", i_mnum);
-		rea.addAttribute("i_mdiv", i_mdiv);
-		return "redirect:userpphotoview.do";
-	}
+    @RequestMapping(value = "/ilikeknowreply") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½
+    public String ilikeknowreply(HttpServletRequest request, RedirectAttributes rea) {
+        int rino = Integer.parseInt(request.getParameter("rino"));
+        int ino = Integer.parseInt(request.getParameter("ino"));
+        profileService.ilikereplycnt(rino);
+        String i_mnum = request.getParameter("i_mnum");
+        String i_mdiv = request.getParameter("i_mdiv");
+        rea.addAttribute("ino", ino);
+        rea.addAttribute("i_mnum", i_mnum);
+        rea.addAttribute("i_mdiv", i_mdiv);
+        return "redirect:userpphotoview.do";
+    }
 
-	@RequestMapping(value = "/ideletereply") // ³ëÇÏ¿ì ´ñ±Û »èÁ¦
-	public String idelreply(HttpServletRequest request, RedirectAttributes rea) {
-		int rino = Integer.parseInt(request.getParameter("rino"));
-		int ino = Integer.parseInt(request.getParameter("ino"));
-		profileService.ideletereply(rino);
-		String i_mnum = request.getParameter("i_mnum");
-		String i_mdiv = request.getParameter("i_mdiv");
-		rea.addAttribute("ino", ino);
-		rea.addAttribute("i_mnum", i_mnum);
-		rea.addAttribute("i_mdiv", i_mdiv);
-		return "redirect:userpphotoview.do";
-	}
+    @RequestMapping(value = "/ideletereply") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public String idelreply(HttpServletRequest request, RedirectAttributes rea) {
+        int rino = Integer.parseInt(request.getParameter("rino"));
+        int ino = Integer.parseInt(request.getParameter("ino"));
+        profileService.ideletereply(rino);
+        String i_mnum = request.getParameter("i_mnum");
+        String i_mdiv = request.getParameter("i_mdiv");
+        rea.addAttribute("ino", ino);
+        rea.addAttribute("i_mnum", i_mnum);
+        rea.addAttribute("i_mdiv", i_mdiv);
+        return "redirect:userpphotoview.do";
+    }
 
-	@RequestMapping(value = "/idelknow") // ³ëÇÏ¿ì ±Û »èÁ¦
-	public String idelknow(HttpServletRequest request) {
-		int ino = Integer.parseInt(request.getParameter("ino"));
-		profileService.delknow(ino);
-		return "redirect:/profile/design.do";
-	}
+    @RequestMapping(value = "/idelknow") // ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public String idelknow(HttpServletRequest request) {
+        int ino = Integer.parseInt(request.getParameter("ino"));
+        profileService.delknow(ino);
+        return "redirect:/profile/design.do";
+    }
 
 }
