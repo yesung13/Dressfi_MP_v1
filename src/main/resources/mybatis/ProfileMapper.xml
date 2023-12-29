@@ -11,12 +11,16 @@ where 1=1) and ROWNUM <= 4
 		]]>
     </select>
     <select id="getfmain" resultMap="getMap">
-        <![CDATA[select *
-from df_imageboard A join df_factory B ON trim(A.i_mnum) =trim(substr(B.mfno,2))
-where A.i_mdiv ='F' and A.i_mnum in(select
-trim(substr(mfno,2)) from df_factory
-where 1=1) and ROWNUM <= 4
-		]]>
+        <![CDATA[
+        SELECT *
+        FROM df_imageboard a
+                 JOIN df_factory b ON TRIM(a.i_mnum) = TRIM(SUBSTR(b.mfno, 2))
+        WHERE a.i_mdiv = 'F'
+          AND a.i_mnum IN (SELECT TRIM(SUBSTR(mfno, 2))
+                           FROM df_factory
+                           WHERE 1 = 1)
+          AND rownum <= 4
+        ]]>
     </select>
     <select id="getcmain" resultMap="getMap">
         <![CDATA[select *
@@ -42,7 +46,7 @@ where 1=1) and ROWNUM <= 4
     <!-- </select> -->
     <select id="getkmain" resultType="KnowHowVO">
         <![CDATA[select *
-	from df_nohowboard2
+	from df_nohowboard
 	WHERE ROWNUM <= 12 
 	order by h_viewcnt asc]]>
     </select>
@@ -50,19 +54,19 @@ where 1=1) and ROWNUM <= 4
 
     <select id="getsend" resultType="PsalVO">
         select *
-        from df_proposal2
+        from df_proposal
         where
         pr_sendid = #{userId}
     </select>
     <select id="getrec" resultType="PsalVO">
         select *
-        from df_proposal2
+        from df_proposal
         where
         pr_targetid = #{userId}
     </select>
     <select id="getpsal" resultType="PsalVO">
         select *
-        from df_proposal2
+        from df_proposal
         where
         prno = #{prno}
     </select>
@@ -72,10 +76,10 @@ where 1=1) and ROWNUM <= 4
                    order="BEFORE">
             SELECT
             COALESCE(MAX(prno), 0) + 1 AS prno FROM
-            df_proposal2
+            df_proposal
         </selectKey>
         INSERT INTO
-        df_proposal2(prno, pr_sendid, pr_targetid, pr_title,
+        df_proposal(prno, pr_sendid, pr_targetid, pr_title,
         pr_context, pr_startdate, pr_enddate, pr_fileloc, pr_area)
         VALUES(#{prno},
         #{pr_sendid}, #{pr_targetid}, #{pr_title},

@@ -232,7 +232,7 @@
 
     <select id="selectKnowhow" resultMap="getMap" parameterType="map">
         select *
-        from df_nohowboard2 A join df_design B ON trim(A.h_mnum) = trim(substr(B.mdno,2))
+        from df_nohowboard A join df_design B ON trim(A.h_mnum) = trim(substr(B.mdno,2))
         where 1=1
         <if test="category != 'all'">
             and h_category = ${category}

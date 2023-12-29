@@ -64,9 +64,7 @@ public class LoginController {
         }
 
         UserVO loginUser = this.loginService.getAdmin(userVO);
-        String str = loginUser.getMno();
-        str = str.substring(0, 1);
-        System.out.print(str);
+        String str = loginUser.getMno().substring(0, 1);
 
 		/*		if (loginUser == null) {
 					model.addAttribute("userId", "");
@@ -74,7 +72,7 @@ public class LoginController {
 					return "/member/admin_login";
 				}*/
 
-        if (str.equals("A")) {
+        if (str.equals("0")) {
             if (BCrypt.checkpw(userVO.getPasswd(), loginUser.getPasswd())) { // ??
                 session.setAttribute("userId", loginUser.getUserId()); // ????? ???????
                 session.setAttribute("userName", loginUser.getName()); // ????? ???????

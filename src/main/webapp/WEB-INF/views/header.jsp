@@ -79,7 +79,7 @@
         }
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="resources/css/profile.css">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/profile.css">
     <!-- 구글 icon -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -91,7 +91,7 @@
     <nav class="navbar sticky-top navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand mb-0 h1" href="/dressfi/">
-                <img src="resources/images/svg/clothing-hanger.svg" class="d-inline-block align-top" alt="logo"> <span
+                <img src="../../resources/images/svg/clothing-hanger.svg" class="d-inline-block align-top" alt="logo"> <span
                     class="d-inline-block align-bottom">DressFi</span>
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"

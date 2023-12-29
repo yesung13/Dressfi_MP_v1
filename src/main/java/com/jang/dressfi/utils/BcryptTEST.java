@@ -4,7 +4,7 @@ public class BcryptTEST {
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
-        String pass = "hello";
+        String pass = "password";
         System.out.println("�׳� ���ڿ� : " + pass);
         String hashPass = BCrypt.hashpw(pass, BCrypt.gensalt(12));
         System.out.println("��ȣȭ�� String : " + hashPass);

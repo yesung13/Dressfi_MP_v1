@@ -3,11 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jang.dressfi.mapper.LoginMapper">
     <select id="findUser" parameterType="UserVO" resultType="UserVO">
-        SELECT
-        userid, passwd, name
+        SELECT userid,
+               passwd,
+               name
         FROM df_member
-        WHERE userid = #{userid} AND passwd
-        = #{passwd}
+        WHERE userid = #{userid}
+          AND passwd
+            = #{passwd}
     </select>
     <select id="getAdmin" parameterType="String" resultType="UserVO">
         SELECT *
@@ -17,9 +19,9 @@
 
 
     <select id="getssUser" parameterType="String" resultType="UserVO">
-        select *
-        from df_loginview
-        where mno = #{mno}
+        SELECT *
+        FROM df_loginview
+        WHERE mno = #{mno}
     </select>
 
     <!-- 디자이너회원 -->
@@ -39,44 +41,58 @@
     <!-- 디자이너회원 -->
     <select id="getMDUser" parameterType="String"
             resultType="UserVO">
-        select md_userid userid, md_passwd passwd, md_name name,
-        md_proimg proimg
-        from df_design
-        where md_userid = #{userId}
+        SELECT md_userid userid,
+               md_passwd passwd,
+               md_name   name,
+               md_proimg proimg
+        FROM df_design
+        WHERE md_userid = #{userId}
     </select>
     <!-- 공장 -->
     <select id="getMFUser" parameterType="String"
             resultType="UserVO">
-        select mf_userid userid, mf_passwd passwd, mf_name name,
-        mf_proimg proimg
-        from df_factory
-        where mf_userid = #{userId}
+        SELECT mf_userid userid,
+               mf_passwd passwd,
+               mf_name   name,
+               mf_proimg proimg
+        FROM df_factory
+        WHERE mf_userid = #{userId}
     </select>
     <!-- Seller -->
     <select id="getMCUser" parameterType="String"
             resultType="UserVO">
-        select mc_userid userid, mc_passwd passwd, mc_name name,
-        mc_proimg proimg
-        from df_seller
-        where mc_userid = #{userId}
+        SELECT mc_userid userid,
+               mc_passwd passwd,
+               mc_name   name,
+               mc_proimg proimg
+        FROM df_seller
+        WHERE mc_userid = #{userId}
     </select>
 
     <select id="getUserList" parameterType="UserVO"
             resultType="UserVO">
-        select * from df_member order by mno
+        SELECT *
+        FROM df_member
+        ORDER BY mno
     </select>
     <select id="getMDUserList" parameterType="DesignVO"
             resultType="DesignVO">
-        select * from df_design order by mdno
+        SELECT *
+        FROM df_design
+        ORDER BY mdno
     </select>
     <select id="getMFUserList" parameterType="FactoryVO"
             resultType="FactoryVO">
-        select * from df_factory order by mfno
+        SELECT *
+        FROM df_factory
+        ORDER BY mfno
     </select>
 
     <select id="getMCUserList" parameterType="SellerVO"
             resultType="SellerVO">
-        select * from df_seller order by mcno
+        SELECT *
+        FROM df_seller
+        ORDER BY mcno
     </select>
 
     <!-- <select id="getUser" parameterType="String" resultType="UserVO"> -->
@@ -85,26 +101,26 @@
     <!-- WHERE userid = #{userId} -->
     <!-- </select> -->
     <select id="getUser" parameterType="String" resultType="UserVO">
-        select *
-        from df_loginview
+        SELECT *
+        FROM df_loginview
         WHERE userid = #{userId}
     </select>
 
     <select id="getsUser" parameterType="String" resultType="UserVO">
-        select *
-        from df_loginview
+        SELECT *
+        FROM df_loginview
         WHERE name = #{username}
     </select>
 
     <!-- 일반회원 가입 -->
     <insert id="insertUser" keyProperty="mno">
         INSERT INTO df_member (mno,
-        userId, passwd, name, phone, homepage,
-        introduce, kakaourl, proimg)
-        VALUES ('M'||SEQ_DF_MNO.nextval,#{userId}, #{passwd},
-        #{name},
-        #{phone}, #{homepage},
-        #{introduce}, #{kakaourl}, #{proimg})
+                               userid, passwd, name, phone, homepage,
+                               introduce, kakaourl, proimg)
+        VALUES ('M' || seq_df_mno.nextval, #{userId}, #{passwd},
+                #{name},
+                #{phone}, #{homepage},
+                #{introduce}, #{kakaourl}, #{proimg})
     </insert>
 
     <!-- 디자이너회원 가입 -->
@@ -140,105 +156,101 @@
     <insert id="insertMDUser" keyProperty="mdno">
         INSERT
         INTO df_design
-        (mdno, md_userId, md_passwd, md_name, md_phone,
-        md_dept,
-        md_career,
-        md_business, md_bnum, md_bname, md_bzip, md_badd1,
-        md_badd2,
-        md_ano1,
-        md_ano2, md_ano3,
-        md_homepage, md_introduce,
-        md_kakaourl,
-        md_proimg)
-        VALUES
-        ('D'||SEQ_DF_MDNO.nextval, #{md_userId},
-        #{md_passwd},
-        #{md_name}, #{md_phone}, #{md_dept}, #{md_career},
-        #{md_business},
-        #{md_bnum}, #{md_bname}, #{md_bzip}, #{md_badd1},
-        #{md_badd2},
-        #{md_ano1}, #{md_ano2}, #{md_ano3},
-        #{md_homepage},
-        #{md_introduce},
-        #{md_kakaourl}, #{md_proimg})
+        (mdno, md_userid, md_passwd, md_name, md_phone,
+         md_dept,
+         md_career,
+         md_business, md_bnum, md_bname, md_bzip, md_badd1,
+         md_badd2,
+         md_ano1,
+         md_ano2, md_ano3,
+         md_homepage, md_introduce,
+         md_kakaourl,
+         md_proimg)
+        VALUES ('D' || seq_df_mdno.nextval, #{md_userId},
+                #{md_passwd},
+                #{md_name},
+                #{md_phone}, #{md_dept}, #{md_career},
+                #{md_business},
+                #{md_bnum}, #{md_bname}, #{md_bzip}, #{md_badd1},
+                #{md_badd2},
+                #{md_ano1}, #{md_ano2}, #{md_ano3},
+                #{md_homepage},
+                #{md_introduce},
+                #{md_kakaourl}, #{md_proimg})
     </insert>
 
     <!-- 공장회원 가입 -->
     <insert id="insertMFUser" keyProperty="mfno">
         INSERT INTO df_factory
-        (mfno, mf_userId, mf_passwd, mf_proimg,
-        mf_name,
-        mf_phone,mf_dept,
-        mf_business, mf_bnum, mf_bname,
-        mf_bzip,
-        mf_badd1,
-        mf_badd2, mf_ano1,
-        mf_ano2,
-        mf_ano3,mf_homepage, mf_introduce,
-        mf_kakaourl
-        )
-        VALUES
-        ('F'||SEQ_DF_MFNO.nextval,
-        #{mf_userId},
-        #{mf_passwd},
-        #{mf_proimg},
-        #{mf_name},
-        #{mf_phone}, #{mf_dept},
-        #{mf_business}, #{mf_bnum},
-        #{mf_bname},
-        #{mf_bzip}, #{mf_badd1},
-        #{mf_badd2}, #{mf_ano1},
-        #{mf_ano2}, #{mf_ano3},
-        #{mf_homepage},
-        #{mf_introduce},
-        #{mf_kakaourl})
+        (mfno, mf_userid, mf_passwd, mf_proimg,
+         mf_name,
+         mf_phone, mf_dept,
+         mf_business, mf_bnum, mf_bname,
+         mf_bzip,
+         mf_badd1,
+         mf_badd2, mf_ano1,
+         mf_ano2,
+         mf_ano3, mf_homepage, mf_introduce,
+         mf_kakaourl)
+        VALUES ('F' || seq_df_mfno.nextval,
+                #{mf_userId},
+                #{mf_passwd},
+                #{mf_proimg},
+                #{mf_name},
+                #{mf_phone}, #{mf_dept},
+                #{mf_business}, #{mf_bnum},
+                #{mf_bname},
+                #{mf_bzip}, #{mf_badd1},
+                #{mf_badd2}, #{mf_ano1},
+                #{mf_ano2}, #{mf_ano3},
+                #{mf_homepage},
+                #{mf_introduce},
+                #{mf_kakaourl})
     </insert>
 
     <insert id="insertMCUser" keyProperty="mcno">
         INSERT INTO df_seller
-        (mcno, mc_userId, mc_passwd, mc_proimg,
-        mc_name,
-        mc_phone,mc_div,
-        mc_dept, mc_subdept,
-        mc_business, mc_bnum, mc_bname,
-        mc_bzip,
-        mc_badd1,
-        mc_badd2, mc_ano1, mc_ano2,
-        mc_ano3, mc_homepage,
-        mc_introduce,
-        mc_kakaourl
-        )
-        VALUES
-        ('S'||SEQ_DF_MCNO.nextval,
-        #{mc_userId},
-        #{mc_passwd},
-        #{mc_proimg},
-        #{mc_name},
-        #{mc_phone},#{mc_div},
-        #{mc_dept}, #{mc_subdept},
-        #{mc_business},
-        #{mc_bnum},
-        #{mc_bname},
-        #{mc_bzip}, #{mc_badd1},
-        #{mc_badd2},
-        #{mc_ano1},
-        #{mc_ano2}, #{mc_ano3},
-        #{mc_homepage},
-        #{mc_introduce},
-        #{mc_kakaourl})
+        (mcno, mc_userid, mc_passwd, mc_proimg,
+         mc_name,
+         mc_phone, mc_div,
+         mc_dept, mc_subdept,
+         mc_business, mc_bnum, mc_bname,
+         mc_bzip,
+         mc_badd1,
+         mc_badd2, mc_ano1, mc_ano2,
+         mc_ano3, mc_homepage,
+         mc_introduce,
+         mc_kakaourl)
+        VALUES ('S' || seq_df_mcno.nextval,
+                #{mc_userId},
+                #{mc_passwd},
+                #{mc_proimg},
+                #{mc_name},
+                #{mc_phone}, #{mc_div},
+                #{mc_dept}, #{mc_subdept},
+                #{mc_business},
+                #{mc_bnum},
+                #{mc_bname},
+                #{mc_bzip}, #{mc_badd1},
+                #{mc_badd2},
+                #{mc_ano1},
+                #{mc_ano2}, #{mc_ano3},
+                #{mc_homepage},
+                #{mc_introduce},
+                #{mc_kakaourl})
     </insert>
 
     <update id="updateUser" parameterType="UserVO">
         UPDATE df_member
-        SET
-        passwd
-        = #{passwd}, email = #{email}
+        SET passwd
+                  = #{passwd},
+            email = #{email}
         WHERE mno = #{mno}
     </update>
 
     <select id="findId" parameterType="UserVO" resultType="UserVO">
         SELECT
-        userId
+        userid
         FROM df_member
         WHERE email = #{email} AND name = #{name}
         <!-- WHERE name = #{name} AND jumin = #{jumin} AND email = #{email} -->
@@ -247,35 +259,41 @@
     <select id="findPass" parameterType="UserVO" resultType="UserVO">
         SELECT *
         FROM df_member
-        WHERE userId = #{userId} AND name = #{name} AND jumin =
-        #{jumin} AND email = #{email}
+        WHERE userid = #{userId}
+          AND name = #{name}
+          AND jumin =
+              #{jumin}
+          AND email = #{email}
     </select>
 
     <update id="updatePass">
         UPDATE bbs_member
-        SET
-        passwd = #{passwd}
-        WHERE userId =
-        #{userId}
+        SET passwd = #{passwd}
+        WHERE userid =
+              #{userId}
     </update>
 
     <delete id="deleteUser">
-        DELETE FROM df_member
+        DELETE
+        FROM df_member
         WHERE mno = #{mno}
     </delete>
 
     <delete id="MDdeleteUser">
-        DELETE FROM df_design
+        DELETE
+        FROM df_design
         WHERE mdno = #{mdno}
     </delete>
 
     <delete id="MFdeleteUser">
-        DELETE FROM df_factory
+        DELETE
+        FROM df_factory
         WHERE mfno = #{mfno}
     </delete>
 
     <delete id="MCdeleteUser">
-        DELETE FROM df_seller
+        DELETE
+        FROM df_seller
         WHERE mcno = #{mcno}
     </delete>
 

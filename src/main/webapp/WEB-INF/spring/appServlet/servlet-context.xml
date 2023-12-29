@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans
-        xmlns="http://www.springframework.org/schema/mvc"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:beans="http://www.springframework.org/schema/beans"
-        xmlns:context="http://www.springframework.org/schema/context"
-        xmlns:websocket="http://www.springframework.org/schema/websocket"
-        xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
-		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc
+			 					 https://www.springframework.org/schema/mvc/spring-mvc.xsd
+			 					 http://www.springframework.org/schema/beans
+			 					 https://www.springframework.org/schema/beans/spring-beans.xsd
+			 					 http://www.springframework.org/schema/context
+			 					 https://www.springframework.org/schema/context/spring-context.xsd">
 
+    <!-- @Controller 애노테이션 사용 -->
+
+
+    <!-- 컴포넌트 스캔을 통한 빈 등록 -->
+    <context:component-scan
+            base-package="com.jang.dressfi"/>
 
     <!-- DispatcherServlet Context: defines this servlet's request-processing
         infrastructure -->
@@ -19,35 +26,31 @@
     <!-- Handles HTTP GET requests for /resources/** by efficiently serving
         up static resources in the ${webappRoot}/resources directory -->
     <resources mapping="/resources/**" location="/resources/"/>
-    <resources mapping="/img/**"
-               location="C:\Users\Admin\Desktop\jaubbs19\src\main\webapp\resources\img\"/>
+    <resources mapping="/img/**" location="/img/"/>
+
 
     <!-- Resolves views selected for rendering by @Controllers to .jsp resources
         in the /WEB-INF/views directory -->
+    <!-- 뷰 리졸버 설정 -->
     <beans:bean
             class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <beans:property name="prefix" value="/WEB-INF/views/"/>
         <beans:property name="suffix" value=".jsp"/>
     </beans:bean>
 
-
+    <!-- 파일 업로드 설정 -->
     <beans:bean id="multipartResolver"
                 class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <beans:property name="maxUploadSize" value="100000000"/>
+        <beans:property name="maxUploadSize" value="100000000"/> <!--파일 업로드 용량 100MB -->
     </beans:bean>
 
     <!-- 웹소켓 사용 -->
-
     <!-- <websocket:handlers> -->
-
     <!-- <websocket:mapping path="/count" handler="myHandler"/> -->
-
     <!-- </websocket:handlers> -->
 
 
     <!-- 웹 소켓 핸들러 -->
-
-
     <!-- <beans:bean id="myHandler" class="com.jang.dressfi.handler.WebSocketHandler"/> -->
 
     <interceptors>
@@ -67,7 +70,5 @@
         </interceptor>
     </interceptors>
 
-    <context:component-scan
-            base-package="com.jang.dressfi"/>
 
 </beans:beans>
